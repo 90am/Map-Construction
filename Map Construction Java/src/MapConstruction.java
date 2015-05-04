@@ -21,6 +21,7 @@ public class MapConstruction {
         this.sigma2 = 5;
         this.M = 1;
         this.k = 0.005;
+        clarify();
     }
 
     private void clarify(){
@@ -39,7 +40,9 @@ public class MapConstruction {
                                 bestPoint = tempPoint;
                             }
                         }
-                        System.out.println("Attraction forces: "+attractionForce(bestDistance));
+                        double att = attractionForce(bestDistance);
+                        //if(att>0.3)
+                        //System.out.println("Attraction forces: "+att);
                     }
                 }
             }
@@ -47,7 +50,7 @@ public class MapConstruction {
     }
 
     private double attractionForce(double distance){
-        return Math.exp(-Math.pow(distance,2)/(2*Math.pow(20,2)));
+        return Math.exp(-Math.pow(distance,2)/(2*Math.pow(5,2)));
     }
 
     // Calculates the shortest distance from p to the trace segment from p1 to p2. Returns the best point, which is either p1, p2 or the point orthogonal on the trace segment
