@@ -34,8 +34,8 @@ public class HerningCyklerDataSaver {
                     conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
                     // Execute update
                     stmt = conn.createStatement();
-                    String sql = " INSERT INTO updatedPoints (PointId, RuteId, X, Y, Lat, Lon, TimePoint) VALUES ("+p.getPointId()+", "+p.getRuteId()+
-                            ", "+p.getNewX()+", "+p.getNewY()+", "+LatLonTemp.getLatitude()+", "+LatLonTemp.getLongitude()+", "+p.getTime()+")";
+                    String sql = " INSERT INTO updatedPoint (PointId, RuteId, X, Y, Lat, Lon, TimePoint) VALUES ("+p.getPointId()+", "+p.getRuteId()+
+                            ", "+p.getNewX()+", "+p.getNewY()+", "+LatLonTemp.getLatitude()+", "+LatLonTemp.getLongitude()+", '"+p.getTime()+"')";
                     stmt.executeUpdate(sql);
                     stmt.close();
                     conn.close();

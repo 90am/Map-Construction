@@ -14,6 +14,7 @@ public class MapConstruction {
     private double M;
     private double k;
     private long roadSegmentId;
+    private int maxRuteId;
 
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
         this.data = data;
@@ -23,29 +24,41 @@ public class MapConstruction {
         this.M = 1;
         this.k = 0.005;
         this.roadSegmentId = 0;
+        maxRuteId  = 0;
+        for(Integer key : data.keySet()){
+            if(key > maxRuteId){
+                maxRuteId = key;
+            }
+        }
+        
         clarify();
     }
 
     private void clarify(){
-        for(Integer key : data.keySet()){
-            for(Point p : data.get(key)){
-                for(Integer key2 : data.keySet()){
-                    if(key != key2){
-                        ArrayList<Point> trace = data.get(key2);
-                        double bestDistance = Double.MAX_VALUE;
-                        Point bestPoint = null;
-                        for(int i=1; i<trace.size()-1; i++){
-                            Point tempPoint = getDistanceToTraceSegment(p, trace.get(i-1), trace.get(i));
-                            double tempDistance = getDistancePointToPoint(p.getX(), p.getY(), tempPoint.getX(), tempPoint.getY());
-                            if(tempDistance < bestDistance){
-                                bestDistance = tempDistance;
-                                bestPoint = tempPoint;
+        for(int j=0; j<10; j++){
+            for(Integer key : data.keySet()){
+                for(Point p : data.get(key)){
+                    for(Integer key2 : data.keySet()){
+                        if(key != key2){
+                            ArrayList<Point> trace = data.get(key2);
+                            double bestDistance = Double.MAX_VALUE;
+                            Point bestPoint = null;
+                            for(int i=1; i<trace.size()-1; i++){
+                                Point tempPoint = getDistanceToTraceSegment(p, trace.get(i-1), trace.get(i));
+                                double tempDistance = getDistancePointToPoint(p.getX(), p.getY(), tempPoint.getX(), tempPoint.getY());
+                                if(tempDistance < bestDistance){
+                                    bestDistance = tempDistance;
+                                    bestPoint = tempPoint;
+                                }
+                            }
+                            if(bestPoint != null){
+                                double att = attractionForce(bestDistance);
+                                p.updatePoint(att, bestPoint, bestDistance);
+                                double spring = springForce(att*getDistancePointToPoint(p.getX(), p.getY(), bestPoint.getNewX(), bestPoint.getNewY()));
+                                p.updatePoint(spring, p, att*bestDistance);
+                                //System.out.println("Updating point with att force " + att + " and sprince force " + spring);
                             }
                         }
-                        double att = attractionForce(bestDistance);
-                        p.updatePoint(att, bestPoint, bestDistance);
-                        double spring = springForce(att*bestDistance);
-                        p.updatePoint(spring, p, att*bestDistance);
                     }
                 }
             }
@@ -53,7 +66,7 @@ public class MapConstruction {
     }
 
     private double attractionForce(double distance){
-        return Math.exp(-Math.pow(distance,2)/(2*Math.pow(5,2)));
+        return Math.exp(-Math.pow(distance,2)/(2*Math.pow(20,2)));
     }
 
     private double springForce(double distance){
@@ -96,7 +109,7 @@ public class MapConstruction {
     private double getDistancePointToPoint(double x1, double y1, double x2, double y2){
         double xd = x2-x1;
         double yd = y2-y1;
-        return Math.sqrt(xd*xd+yd*yd);
+        return Math.sqrt(xd * xd + yd * yd);
     }
 
     public long getRoadSegmentId(){

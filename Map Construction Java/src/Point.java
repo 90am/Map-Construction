@@ -27,6 +27,10 @@ public class Point {
         this.newY = y;
     }
 
+    public void setRuteId(int ruteId){
+        this.ruteId = ruteId;
+    }
+
     public double getLat(){
         return lat;
     }
@@ -68,6 +72,8 @@ public class Point {
     }
 
     public void updatePoint(double force, Point p, double distance){
+        if(p == null)
+            System.out.println("P IS NULL!!!");
         double moveDistance = Math.sqrt(Math.pow(force*distance, 2)/2);
         if(p.getNewX() > newX){
             newX += moveDistance;
