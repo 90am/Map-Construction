@@ -1,5 +1,7 @@
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -8,34 +10,60 @@ import java.util.HashMap;
 public class MapConstruction {
 
     private HashMap<Integer, ArrayList<Point>> data;
-    private ArrayList<RoadSegment> result;
+    //private ArrayList<RoadSegment> result;
     private double sigma1;
     private double sigma2;
     private double M;
     private double k;
     private long roadSegmentId;
-    private int maxRuteId;
+    private int ruteId;
 
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
         this.data = data;
-        this.result = new ArrayList<RoadSegment>();
+        //this.result = new ArrayList<RoadSegment>();
         this.sigma1 = 5;
         this.sigma2 = 5;
         this.M = 1;
         this.k = 0.005;
         this.roadSegmentId = 0;
-        maxRuteId  = 0;
-        for(Integer key : data.keySet()){
-            if(key > maxRuteId){
-                maxRuteId = key;
-            }
-        }
-        
+        ruteId  = 0;
+        sanityCheck();
         clarify();
     }
 
+    private void sanityCheck(){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        for(Integer key : data.keySet()){
+            ArrayList<Point> temp = new ArrayList<Point>();
+            for(Point p : data.get(key)){
+                if(temp.size() == 0){
+                    p.setRuteId(getRuteId());
+                    temp.add(p);
+                }
+                else{
+                    Point prevP = temp.get(temp.size()-1);
+                    Date d1 = getDateFromString(prevP.getTime());
+                    Date d2 = getDateFromString(p.getTime());
+                    long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
+                    if(timeSpan < 30){
+                        p.setRuteId(prevP.getRuteId());
+                        temp.add(p);
+                    }
+                    else{
+                        result.put(prevP.getRuteId(), temp);
+                        temp = new ArrayList<Point>();
+                        p.setRuteId(getRuteId());
+                        temp.add(p);
+                    }
+                }
+            }
+            result.put(temp.get(0).getRuteId(), temp);
+        }
+        data = result;
+    }
+
     private void clarify(){
-        for(int j=0; j<10; j++){
+        for(int j=0; j<2; j++){
             for(Integer key : data.keySet()){
                 for(Point p : data.get(key)){
                     for(Integer key2 : data.keySet()){
@@ -112,6 +140,11 @@ public class MapConstruction {
         return Math.sqrt(xd * xd + yd * yd);
     }
 
+    public int getRuteId(){
+        ruteId++;
+        return ruteId;
+    }
+
     public long getRoadSegmentId(){
         roadSegmentId++;
         return roadSegmentId;
@@ -119,5 +152,17 @@ public class MapConstruction {
 
     public HashMap<Integer, ArrayList<Point>> getData(){
         return data;
+    }
+
+    private Date getDateFromString(String s){
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try{
+            date = format.parse(s);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return date;
     }
 }
