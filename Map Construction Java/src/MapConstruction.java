@@ -13,7 +13,6 @@ public class MapConstruction {
     private double sigma2;
     private double M;
     private double k;
-    private long roadSegmentId;
 
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
         this.data = data;
@@ -22,7 +21,6 @@ public class MapConstruction {
         this.sigma2 = 5;
         this.M = 1;
         this.k = 0.005;
-        this.roadSegmentId = 0;
         clarify();
     }
 
@@ -43,9 +41,8 @@ public class MapConstruction {
                             }
                         }
                         double att = attractionForce(bestDistance);
-                        p.updatePoint(att, bestPoint, bestDistance);
-                        double spring = springForce(att*bestDistance);
-                        p.updatePoint(spring, p, att*bestDistance);
+                        //if(att>0.3)
+                        //System.out.println("Attraction forces: "+att);
                     }
                 }
             }
@@ -54,10 +51,6 @@ public class MapConstruction {
 
     private double attractionForce(double distance){
         return Math.exp(-Math.pow(distance,2)/(2*Math.pow(5,2)));
-    }
-
-    private double springForce(double distance){
-        return 0.005*distance;
     }
 
     // Calculates the shortest distance from p to the trace segment from p1 to p2. Returns the best point, which is either p1, p2 or the point orthogonal on the trace segment
@@ -99,12 +92,4 @@ public class MapConstruction {
         return Math.sqrt(xd*xd+yd*yd);
     }
 
-    public long getRoadSegmentId(){
-        roadSegmentId++;
-        return roadSegmentId;
-    }
-
-    public HashMap<Integer, ArrayList<Point>> getData(){
-        return data;
-    }
 }

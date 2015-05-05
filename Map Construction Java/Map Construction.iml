@@ -8,6 +8,5 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="sqljdbc4" level="project" />
-    <orderEntry type="library" name="openmap" level="project" />
   </component>
 </module>
