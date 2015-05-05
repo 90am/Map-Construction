@@ -1,3 +1,5 @@
+import com.bbn.openmap.proj.coords.UTMPoint;
+
 /**
  * Created by Andreas on 01/05/15.
  */
@@ -10,6 +12,8 @@ public class Point {
     private String time;
     private int pointId;
     private int ruteId;
+    private double newX;
+    private double newY;
 
     public Point(double lat, double lon, double x, double y, String time, int pointId, int ruteId){
         this.lat = lat;
@@ -19,6 +23,8 @@ public class Point {
         this.time = time;
         this.pointId = pointId;
         this.ruteId = ruteId;
+        this.newX = x;
+        this.newY = y;
     }
 
     public double getLat(){
@@ -37,6 +43,14 @@ public class Point {
         return y;
     }
 
+    public double getNewX(){
+        return newX;
+    }
+
+    public double getNewY(){
+        return newY;
+    }
+
     public int getRuteId(){
         return ruteId;
     }
@@ -52,5 +66,22 @@ public class Point {
     public boolean equals(Point p){
         return (pointId == p.getPointId() && ruteId == p.getRuteId());
     }
+
+    public void updatePoint(double force, Point p, double distance){
+        double moveDistance = Math.sqrt(Math.pow(force*distance, 2)/2);
+        if(p.getNewX() > newX){
+            newX += moveDistance;
+        }
+        else{
+            newX -= moveDistance;
+        }
+        if(p.getNewY() > newY){
+            newY += moveDistance;
+        }
+        else{
+            newY -= moveDistance;
+        }
+    }
+
 }
 

@@ -3,10 +3,11 @@
  */
 public class Program {
 
-
     public static void main(String[] args) {
-        HerningCyklerDataLoader data = new HerningCyklerDataLoader();
-        System.out.print("Number of trips: "+data.getAllTrips().keySet().size());
-        MapConstruction test = new MapConstruction(data.getAllTrips());
+        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        System.out.print("Number of trips: "+load.getAllTrips().keySet().size());
+        MapConstruction test = new MapConstruction(load.getAllTrips());
+        save.insertUpdatedPoints(test.getData());
     }
 }

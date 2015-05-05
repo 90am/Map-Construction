@@ -14,7 +14,7 @@ public class HerningCyklerDataLoader {
     private HashMap<Integer, ArrayList<Point>> allTrips;
 
     public HerningCyklerDataLoader(){
-        allTrips = new HashMap<>();
+        allTrips = new HashMap<Integer, ArrayList<Point>>();
         addAllTrips();
     }
 
