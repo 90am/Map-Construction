@@ -11,25 +11,15 @@ public class RoadSegment {
 
     private int roadSegmentId;
     private double length;
-    private String roadType;
     private ArrayList<Node> nodeList;
     private ArrayList<RoadSegment> neighborList;
-    // Used in calculating shortest paths
-    private long dijkstraId;
-    private boolean visited;
-    private RoadSegment fromRoadSegment;
-    private double minDistanceToRoadSegment;
 
-    public RoadSegment(int roadSegmentId, double length, String roadType){
+
+    public RoadSegment(int roadSegmentId, double length){
         this.roadSegmentId = roadSegmentId;
         this.length = length;
-        this.roadType = roadType;
         this.nodeList = new ArrayList<Node>();
         this.neighborList = new ArrayList<RoadSegment>();
-        dijkstraId = 0;
-        visited = false;
-        fromRoadSegment = null;
-        minDistanceToRoadSegment = Double.MIN_VALUE;
     }
 
     public int getRoadSegmentId(){
@@ -38,40 +28,6 @@ public class RoadSegment {
 
     public double getLength(){
         return length;
-    }
-
-    public long getDijkstraId(){
-        return dijkstraId;
-    }
-
-    public RoadSegment getFromRoadSegment(){
-        return fromRoadSegment;
-    }
-
-    public double getMinDistanceToRoadSegment(){
-        return minDistanceToRoadSegment;
-    }
-
-    public boolean isVisited(){
-        return visited;
-    }
-
-    public void resetForNewSearch(long dijkstraId){
-        minDistanceToRoadSegment = Double.MAX_VALUE;
-        fromRoadSegment = null;
-        visited = false;
-        this.dijkstraId = dijkstraId;
-    }
-
-    public void updateMinLengthToFromRoadSegment(double length, RoadSegment r){
-        if(length < minDistanceToRoadSegment){
-            minDistanceToRoadSegment = length;
-            fromRoadSegment = r;
-        }
-    }
-
-    public void setVisited(){
-        visited = true;
     }
 
     public void addNode(Node n){
@@ -88,10 +44,6 @@ public class RoadSegment {
 
     public ArrayList<RoadSegment> getNeighborList(){
         return neighborList;
-    }
-
-    public String getRoadType(){
-        return roadType;
     }
 
     public boolean isNeighbor(RoadSegment r){
