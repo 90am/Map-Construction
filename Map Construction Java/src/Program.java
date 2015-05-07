@@ -8,6 +8,6 @@ public class Program {
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction test = new MapConstruction(load.getAllTrips());
-        save.insertUpdatedPoints(test.getData());
+        save.insertComponents(test.getComponents());
     }
 }

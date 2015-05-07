@@ -13,6 +13,7 @@ import java.util.HashMap;
 public class MapConstruction {
 
     private HashMap<Integer, ArrayList<Point>> data;
+    HashMap<Integer, ArrayList<Point>> componentsFormatted;
     //private ArrayList<RoadSegment> result;
     private double sigma1;
     private double sigma2;
@@ -31,7 +32,7 @@ public class MapConstruction {
         this.k = 0.005;
         this.roadSegmentId = 0;
         ruteId  = 0;
-        /*LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
+        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
         LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         Grid testGrid = new Grid(100, 100, 8, new UTMPoint(min), new UTMPoint(max));
         for(Integer key : data.keySet()){
@@ -41,9 +42,27 @@ public class MapConstruction {
             }
         }
         HashMap<Integer, ArrayList<GridPosition>> components = testGrid.getComponents();
-        System.out.println("Number of components found: " + components.keySet().size());*/
-        sanityCheck();
-        //clarify();
+        componentsFormatted = formatComponents(components);
+        System.out.println("Number of components found: " + components.keySet().size());
+
+        /*sanityCheck();
+        clarify();*/
+    }
+
+    private HashMap<Integer, ArrayList<Point>> formatComponents(HashMap<Integer, ArrayList<GridPosition>> components){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        int pointId = 0;
+        for(Integer key : components.keySet()){
+            ArrayList<Point> list = new ArrayList<Point>();
+            for(GridPosition g : components.get(key)){
+                UTMPoint current = new UTMPoint(g.getY(), g.getX(), 32, 'N');
+                LatLonPoint l = current.toLatLonPoint();
+                Point p =  new Point(l.getLatitude(), l.getLongitude(), g.getX(), g.getY(), "", pointId++, key);
+                list.add(p);
+            }
+            result.put(key, list);
+        }
+        return result;
     }
 
     private void sanityCheck(){
@@ -169,6 +188,10 @@ public class MapConstruction {
 
     public HashMap<Integer, ArrayList<Point>> getData(){
         return data;
+    }
+
+    public HashMap<Integer, ArrayList<Point>> getComponents(){
+        return componentsFormatted;
     }
 
     private Date getDateFromString(String s){
