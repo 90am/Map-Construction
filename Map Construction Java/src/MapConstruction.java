@@ -1,3 +1,6 @@
+import com.bbn.openmap.proj.coords.LatLonPoint;
+import com.bbn.openmap.proj.coords.UTMPoint;
+
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,7 +20,8 @@ public class MapConstruction {
     private double k;
     private long roadSegmentId;
     private int ruteId;
-
+    // min 56.1288653,8.9452581
+    // max 56.146625,8.9885811
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
         this.data = data;
         //this.result = new ArrayList<RoadSegment>();
@@ -27,8 +31,19 @@ public class MapConstruction {
         this.k = 0.005;
         this.roadSegmentId = 0;
         ruteId  = 0;
-        sanityCheck();
-        clarify();
+        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
+        LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
+        Grid testGrid = new Grid(100, 100, 8, new UTMPoint(min), new UTMPoint(max));
+        for(Integer key : data.keySet()){
+            ArrayList<Point> list = data.get(key);
+            for(int i=1; i<list.size()-1;i++){
+                testGrid.addSegment(list.get(i-1), list.get(i));
+            }
+        }
+        HashMap<Integer, ArrayList<GridPosition>> components = testGrid.getComponents();
+        System.out.println("Number of components found: " + components.keySet().size());
+        /*sanityCheck();
+        clarify();*/
     }
 
     private void sanityCheck(){
@@ -57,7 +72,9 @@ public class MapConstruction {
                     }
                 }
             }
-            result.put(temp.get(0).getRuteId(), temp);
+            if(temp.size() > 0)
+                result.put(temp.get(0).getRuteId(), temp);
+
         }
         data = result;
     }
