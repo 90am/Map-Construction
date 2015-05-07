@@ -1,3 +1,5 @@
+import com.bbn.openmap.proj.coords.LatLonPoint;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ public class HerningCyklerDataLoader {
 
     private void addAllTrips(){
         System.out.println("Loading all trips");
+        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
+        LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         Connection conn = null;
         Statement stmt = null;
         try{
@@ -42,14 +46,19 @@ public class HerningCyklerDataLoader {
                 int pointId = rs.getInt("PunktId");
                 int ruteId = rs.getInt("RuteID");
                 Point p = new Point(lat, lon, x, y, time, pointId, ruteId);
-                if(currentRuteId == ruteId){
-                    tempList.add(p);
+                if(p.getLat() > min.getLatitude() && p.getLat() < max.getLatitude() && p.getLon() > min.getLongitude() && p.getLon() < max.getLongitude()) {
+                    if (currentRuteId == ruteId) {
+                        tempList.add(p);
+                    } else {
+                        allTrips.put(currentRuteId, tempList);
+                        currentRuteId = ruteId;
+                        tempList = new ArrayList<Point>();
+                        tempList.add(p);
+                    }
                 }
                 else{
-                    allTrips.put(currentRuteId, tempList);
-                    currentRuteId = ruteId;
+                    currentRuteId = 0;
                     tempList = new ArrayList<Point>();
-                    tempList.add(p);
                 }
             }
             // Clean-up environment
