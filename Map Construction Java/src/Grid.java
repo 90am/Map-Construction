@@ -28,6 +28,18 @@ public class Grid {
         componentId = 0;
     }
 
+    public Grid(double xPixelWidth, double yPixelWidth, int angles, int xMin, int yMin, int xMax, int yMax){
+        gridValues = new HashMap<GridPosition, int[]>();
+        this.xPixelWidth = xPixelWidth;
+        this.yPixelWidth = yPixelWidth;
+        this.angles = angles;
+        this.xMin = xMin;
+        this.xMax = xMax;
+        this.yMin = yMin;
+        this.yMax = yMax;
+        componentId = 0;
+    }
+
     public double getXPixelWidth(){
         return xPixelWidth;
     }
@@ -39,6 +51,7 @@ public class Grid {
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
         HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
         HashSet<GridPosition> addedToComponent = new HashSet<GridPosition>();
+        System.out.println(gridValues.keySet().size());
         for(GridPosition g : gridValues.keySet()){
             if(!addedToComponent.contains(g)){
                 HashSet<GridPosition> visited = new HashSet<GridPosition>();
@@ -51,7 +64,9 @@ public class Grid {
                 int angle = maxAng(g);
                 while(toVisit.size() > 0){
                     GridPosition current = toVisit.poll();
-                    for(GridPosition neighbour : getNeighbors(g)){
+                    System.out.println(current.getX());
+                    System.out.println(current.getY());
+                    for(GridPosition neighbour : getNeighbors(current)){
                         if(!visited.contains(neighbour)){
                             visited.add(neighbour);
                             if(angle == maxAng(neighbour)){
@@ -77,7 +92,7 @@ public class Grid {
         ArrayList<GridPosition> result = new ArrayList<GridPosition>();
         for(int i=(int)g.getX()-1; i<= g.getX()+1; i++){
             for(int j=(int)g.getY()-1; j<=g.getY()+1; j++){
-                if(!(i==g.getX() && j==g.getY()) && gridValues.containsKey(new GridPosition(i, j))){
+                if(!(i==(int)g.getX() && j==(int)g.getY()) && gridValues.containsKey(new GridPosition(i, j))){
                     result.add(new GridPosition(i, j));
                 }
             }
@@ -105,8 +120,12 @@ public class Grid {
             p1 = b;
             p2 = a;
         }
+        System.out.println(p1.getX());
+        System.out.println(p1.getY());
+        System.out.println(p2.getX());
+        System.out.println(p2.getY());
         double ang = getAngle(p1, p2);
-        int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;;
+        int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
         double x = Math.floor((p1.getX()-xMin)/xPixelWidth);
         double y = Math.floor((p1.getY()-yMin)/yPixelWidth);
         double xStop = Math.floor((p2.getX()-xMin)/xPixelWidth);

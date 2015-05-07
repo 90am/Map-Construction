@@ -35,9 +35,10 @@ public class MapConstruction {
         LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
         LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         Grid testGrid = new Grid(100, 100, 8, new UTMPoint(min), new UTMPoint(max));
+        //Grid testGrid = new Grid(5, 5, 8, 5, 5, 100, 100);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
-            for(int i=1; i<list.size()-1;i++){
+            for(int i=1; i<list.size();i++){
                 testGrid.addSegment(list.get(i-1), list.get(i));
             }
         }
@@ -49,15 +50,16 @@ public class MapConstruction {
         clarify();*/
     }
 
+    // TODO fix such that x and y are mapped correctly by multiplying pixelwidth
     private HashMap<Integer, ArrayList<Point>> formatComponents(HashMap<Integer, ArrayList<GridPosition>> components){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         int pointId = 0;
         for(Integer key : components.keySet()){
             ArrayList<Point> list = new ArrayList<Point>();
             for(GridPosition g : components.get(key)){
-                UTMPoint current = new UTMPoint(g.getY(), g.getX(), 32, 'N');
+                UTMPoint current = new UTMPoint(g.getY()*100, g.getX()*100, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
-                Point p =  new Point(l.getLatitude(), l.getLongitude(), g.getX(), g.getY(), "", pointId++, key);
+                Point p =  new Point(l.getLatitude(), l.getLongitude(), g.getX()*100, g.getY()*100, "", pointId++, key);
                 list.add(p);
             }
             result.put(key, list);

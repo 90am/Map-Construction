@@ -19,7 +19,16 @@ public class GridPosition {
         return y;
     }
 
-    public boolean equals(GridPosition p){
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof GridPosition))
+            return false;
+        GridPosition p = (GridPosition) obj;
         return (x==p.getX() && y==p.getY());
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) Math.pow(x * 31,y);
     }
 }
