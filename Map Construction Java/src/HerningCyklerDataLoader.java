@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class HerningCyklerDataLoader {
 
     private String jdbc_driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private String herningCykler_db_url = "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCyklerDEBUG";
+    private String herningCykler_db_url = "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCykler";
     private String herningCykler_user = "HerningUser";
     private String herningCykler_password = "herningpass";
     private HashMap<Integer, ArrayList<Point>> allTrips;
@@ -56,10 +56,7 @@ public class HerningCyklerDataLoader {
                         tempList.add(p);
                     }
                 }
-                else{
-                    currentRuteId = 0;
-                    tempList = new ArrayList<Point>();
-                }
+                allTrips.put(currentRuteId, tempList);
             }
             // Clean-up environment
             rs.close();

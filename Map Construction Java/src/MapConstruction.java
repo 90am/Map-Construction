@@ -31,7 +31,7 @@ public class MapConstruction {
         this.k = 0.005;
         this.roadSegmentId = 0;
         ruteId  = 0;
-        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
+        /*LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
         LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         Grid testGrid = new Grid(100, 100, 8, new UTMPoint(min), new UTMPoint(max));
         for(Integer key : data.keySet()){
@@ -41,9 +41,9 @@ public class MapConstruction {
             }
         }
         HashMap<Integer, ArrayList<GridPosition>> components = testGrid.getComponents();
-        System.out.println("Number of components found: " + components.keySet().size());
-        /*sanityCheck();
-        clarify();*/
+        System.out.println("Number of components found: " + components.keySet().size());*/
+        sanityCheck();
+        //clarify();
     }
 
     private void sanityCheck(){
