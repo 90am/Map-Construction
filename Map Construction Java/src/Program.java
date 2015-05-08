@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
+/*
  * Created by Andreas on 01/05/15.
  */
 public class Program {

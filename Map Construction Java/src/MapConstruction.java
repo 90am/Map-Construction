@@ -21,6 +21,10 @@ public class MapConstruction {
     private double k;
     private long roadSegmentId;
     private int ruteId;
+    private double xPixelWidth;
+    private double yPixelWidth;
+    private UTMPoint minUTM;
+    private UTMPoint maxUTM;
     // min 56.1288653,8.9452581
     // max 56.146625,8.9885811
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
@@ -34,7 +38,11 @@ public class MapConstruction {
         ruteId  = 0;
         LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
         LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
-        Grid testGrid = new Grid(100, 100, 8, new UTMPoint(min), new UTMPoint(max));
+        xPixelWidth = 100;
+        yPixelWidth = 100;
+        minUTM = new UTMPoint(min);
+        maxUTM = new UTMPoint(max);
+        Grid testGrid = new Grid(xPixelWidth, yPixelWidth, 8, minUTM, maxUTM);
         //Grid testGrid = new Grid(5, 5, 8, 5, 5, 100, 100);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
@@ -50,14 +58,13 @@ public class MapConstruction {
         clarify();*/
     }
 
-    // TODO fix such that x and y are mapped correctly by multiplying pixelwidth
     private HashMap<Integer, ArrayList<Point>> formatComponents(HashMap<Integer, ArrayList<GridPosition>> components){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         int pointId = 0;
         for(Integer key : components.keySet()){
             ArrayList<Point> list = new ArrayList<Point>();
             for(GridPosition g : components.get(key)){
-                UTMPoint current = new UTMPoint(g.getY()*100, g.getX()*100, 32, 'N');
+                UTMPoint current = new UTMPoint((g.getY()*yPixelWidth)+minUTM.northing, (g.getX()*xPixelWidth)+minUTM.easting, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
                 Point p =  new Point(l.getLatitude(), l.getLongitude(), g.getX()*100, g.getY()*100, "", pointId++, key);
                 list.add(p);

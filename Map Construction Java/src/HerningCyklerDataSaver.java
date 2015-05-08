@@ -64,16 +64,16 @@ public class HerningCyklerDataSaver {
         Statement stmt = null;
         for (Integer key : points.keySet()) {
             for (Point p : points.get(key)) {
-                UTMPoint UTMTemp = new UTMPoint(p.getNewY(), p.getNewX(), 32, 'N');
-                LatLonPoint LatLonTemp = UTMTemp.toLatLonPoint();
+                /*UTMPoint UTMTemp = new UTMPoint(p.getY(), p.getX(), 32, 'N');
+                LatLonPoint LatLonTemp = UTMTemp.toLatLonPoint();*/
                 try {
                     // Register jdbc driver and open connection
                     Class.forName(jdbc_driver);
                     conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
                     // Execute update
                     stmt = conn.createStatement();
-                    String sql = " INSERT INTO components (PointId, RuteId, X, Y, Lat, Lon) VALUES ("+p.getPointId()+", "+p.getRuteId()+
-                            ", "+p.getNewX()+", "+p.getNewY()+", "+LatLonTemp.getLatitude()+", "+LatLonTemp.getLongitude()+")";
+                    String sql = " INSERT INTO components (PointId, componentId, X, Y, Lat, Lon) VALUES ("+p.getPointId()+", "+p.getRuteId()+
+                            ", "+p.getX()+", "+p.getY()+", "+p.getLat()+", "+p.getLon()+")";
                     stmt.executeUpdate(sql);
                     stmt.close();
                     conn.close();

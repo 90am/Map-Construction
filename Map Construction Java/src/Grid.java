@@ -51,7 +51,6 @@ public class Grid {
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
         HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
         HashSet<GridPosition> addedToComponent = new HashSet<GridPosition>();
-        System.out.println(gridValues.keySet().size());
         for(GridPosition g : gridValues.keySet()){
             if(!addedToComponent.contains(g)){
                 HashSet<GridPosition> visited = new HashSet<GridPosition>();
@@ -64,8 +63,6 @@ public class Grid {
                 int angle = maxAng(g);
                 while(toVisit.size() > 0){
                     GridPosition current = toVisit.poll();
-                    System.out.println(current.getX());
-                    System.out.println(current.getY());
                     for(GridPosition neighbour : getNeighbors(current)){
                         if(!visited.contains(neighbour)){
                             visited.add(neighbour);
@@ -120,10 +117,6 @@ public class Grid {
             p1 = b;
             p2 = a;
         }
-        System.out.println(p1.getX());
-        System.out.println(p1.getY());
-        System.out.println(p2.getX());
-        System.out.println(p2.getY());
         double ang = getAngle(p1, p2);
         int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
         double x = Math.floor((p1.getX()-xMin)/xPixelWidth);
