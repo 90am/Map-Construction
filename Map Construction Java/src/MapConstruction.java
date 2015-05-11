@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Andreas on 04/05/15.
@@ -29,6 +30,9 @@ public class MapConstruction {
     // max 56.146625,8.9885811
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
         this.data = data;
+        for(Integer key : data.keySet()){
+            data.put(key, filterPoints(data.get(key)));
+        }
         //this.result = new ArrayList<RoadSegment>();
         this.sigma1 = 5;
         this.sigma2 = 5;
@@ -57,6 +61,29 @@ public class MapConstruction {
 
         /*
         clarify();*/
+    }
+
+    // Remove very bad point;
+    private ArrayList<Point> filterPoints(ArrayList<Point> points){
+        ArrayList<Point> result = new ArrayList<Point>();
+        Point prev = points.get(0);
+        result.add(prev);
+        int skipped = 0;
+        for(int i=1; i<points.size(); i++){
+            Date fromTime = getDateFromString(prev.getTime());
+            Date toTime = getDateFromString(points.get(i).getTime());
+            double timeSpan = (toTime.getTime() - fromTime.getTime()) / 1000;
+            double distance  = getDistancePointToPoint(prev.getX(), prev.getY(), points.get(i).getX(), points.get(i).getY());
+            double ms = distance / timeSpan;
+            if(ms < 40){
+                prev = points.get(i);
+                result.add(prev);
+            }
+            else{
+                skipped++;
+            }
+        }
+        return result;
     }
 
     private HashMap<Integer, ArrayList<Point>> formatComponents(HashMap<Integer, ArrayList<GridPosition>> components){
