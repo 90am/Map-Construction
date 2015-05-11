@@ -36,10 +36,11 @@ public class MapConstruction {
         this.k = 0.005;
         this.roadSegmentId = 0;
         ruteId  = 0;
+        sanityCheck();
         LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
         LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
-        xPixelWidth = 100;
-        yPixelWidth = 100;
+        xPixelWidth = 300;
+        yPixelWidth = 300;
         minUTM = new UTMPoint(min);
         maxUTM = new UTMPoint(max);
         Grid testGrid = new Grid(xPixelWidth, yPixelWidth, 8, minUTM, maxUTM);
@@ -54,7 +55,7 @@ public class MapConstruction {
         componentsFormatted = formatComponents(components);
         System.out.println("Number of components found: " + components.keySet().size());
 
-        /*sanityCheck();
+        /*
         clarify();*/
     }
 
@@ -65,8 +66,9 @@ public class MapConstruction {
             ArrayList<Point> list = new ArrayList<Point>();
             for(GridPosition g : components.get(key)){
                 UTMPoint current = new UTMPoint((g.getY()*yPixelWidth)+minUTM.northing, (g.getX()*xPixelWidth)+minUTM.easting, 32, 'N');
+                //UTMPoint current = new UTMPoint((g.getY()*5)+5, (g.getX()*5)+5, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
-                Point p =  new Point(l.getLatitude(), l.getLongitude(), g.getX()*100, g.getY()*100, "", pointId++, key);
+                Point p =  new Point(l.getLatitude(), l.getLongitude(), current.northing, current.easting, "", pointId++, key);
                 list.add(p);
             }
             result.put(key, list);

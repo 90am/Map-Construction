@@ -16,15 +16,18 @@ public class Grid {
     private int angles;
     private int componentId;
 
-    public Grid(double xPixelWidth, double yPixelWidth, int angles, UTMPoint min, UTMPoint max){
+    public Grid(double xWidth, double yWidth, int angles, UTMPoint min, UTMPoint max){
         gridValues = new HashMap<GridPosition, int[]>();
-        this.xPixelWidth = xPixelWidth;
-        this.yPixelWidth = yPixelWidth;
         this.angles = angles;
         this.xMin = min.easting;
         this.xMax = max.easting;
         this.yMin = min.northing;
         this.yMax = max.northing;
+        double xDist = xMax-xMin;
+        double yDist = yMax-yMin;
+        double ration = xDist/yDist;
+        xPixelWidth = (xMax-xMin)/xWidth;
+        yPixelWidth = (yMax-yMin)/(xWidth/ration);
         componentId = 0;
     }
 
@@ -119,18 +122,18 @@ public class Grid {
         }
         double ang = getAngle(p1, p2);
         int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
-        double x = Math.floor((p1.getX()-xMin)/xPixelWidth);
-        double y = Math.floor((p1.getY()-yMin)/yPixelWidth);
-        double xStop = Math.floor((p2.getX()-xMin)/xPixelWidth);
-        double yStop = Math.floor((p2.getY()-yMin)/yPixelWidth);
-        int xSteps = (int) Math.abs(xStop-x);
-        int ySteps = (int) Math.abs(yStop-y);
+        int x = (int)Math.floor((p1.getX()-xMin)/xPixelWidth);
+        int y = (int)Math.floor((p1.getY()-yMin)/yPixelWidth);
+        int xStop = (int)Math.floor((p2.getX()-xMin)/xPixelWidth);
+        int yStop = (int)Math.floor((p2.getY()-yMin)/yPixelWidth);
+        int xSteps = Math.abs(xStop-x);
+        int ySteps = Math.abs(yStop-y);
         if(ySteps >= xSteps){
             int step = 0;
-            double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getY()) / ySteps;
+            double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
             while(y <= yStop){
                 double xVal = p1.getX() + (step*xChange);
-                x = Math.floor((xVal-xMin)/xPixelWidth);
+                x = (int) ((xVal-xMin)/xPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 int[] angl;
                 if(!gridValues.containsKey(g)){
@@ -147,10 +150,10 @@ public class Grid {
         }
         else{
             int step = 0;
-            double yChange = (p2.getX() - p1.getY()) / xSteps;
+            double yChange = (p2.getY() - p1.getY()) / xSteps;
             while(step <= xSteps){
                 double yVal = p1.getY() + (step*yChange);
-                y = Math.floor((yVal-yMin)/yPixelWidth);
+                y = (int) ((yVal-yMin)/yPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 int[] angl;
                 if(!gridValues.containsKey(g)){
@@ -170,7 +173,7 @@ public class Grid {
 
     public double getAngle(Point p1, Point p2){
         double dx = p2.getX()-p1.getX();
-        double dy = p2.getY() - p1.getY();
+        double dy = p2.getY()-p1.getY();
         return Math.atan2(dy, dx);
     }
 

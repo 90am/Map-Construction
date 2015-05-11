@@ -15,12 +15,15 @@ public class Program {
         testList.add(new Point(0, 0, 50, 50, "", 2, 1));
         testList.add(new Point(0, 0, 70, 70, "", 3, 1));
         testDataSet.put(1, testList);
-        MapConstruction test = new MapConstruction(testDataSet);*/
+        MapConstruction test = new MapConstruction(testDataSet);
+        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        save.insertComponents(test.getComponents());*/
 
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction test = new MapConstruction(load.getAllTrips());
         save.insertComponents(test.getComponents());
+
     }
 }
