@@ -53,6 +53,7 @@ public class Grid2 {
     }
 
     public void addTrajectory(ArrayList<Point> trajectory){
+        GridPosition prevG = null;
         for(Point p : trajectory){
             GridPosition g = getGridPosition(p);
             if(!gridValues.containsKey(g)){
@@ -61,7 +62,7 @@ public class Grid2 {
             else{
                 gridValues.put(g, gridValues.get(g)+1);
             }
-            ArrayList<GridPosition> neighbors = getNeighbors(g);
+            /*ArrayList<GridPosition> neighbors = getNeighbors(g);
             for(GridPosition n : neighbors){
                 if(!gridValues.containsKey(n)){
                     gridValues.put(g, 0.5);
@@ -69,7 +70,12 @@ public class Grid2 {
                 else{
                     gridValues.put(n, gridValues.get(n)+0.5);
                 }
+            }*/
+
+            /*if(prevG != null){
+
             }
+            prevG = g;*/
         }
     }
 
