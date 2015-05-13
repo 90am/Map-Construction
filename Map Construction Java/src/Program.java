@@ -17,13 +17,17 @@ public class Program {
         testDataSet.put(1, testList);
         MapConstruction test = new MapConstruction(testDataSet);
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        save.insertComponents(test.getComponents());*/
+
+        MapConstruction test = new MapConstruction(load.getAllTrips());
+        save.insertComponents(test.getComponents());
+
+        save.insertUpdatedPoints(load.getAllTrips());
+        */
 
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
-        MapConstruction test = new MapConstruction(load.getAllTrips());
-        save.insertComponents(test.getComponents());
+        save.insertUpdatedPoints(load.getAllTrips());
 
     }
 }

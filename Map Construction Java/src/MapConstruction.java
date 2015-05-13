@@ -30,9 +30,9 @@ public class MapConstruction {
     // max 56.146625,8.9885811
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
         this.data = data;
-        for(Integer key : data.keySet()){
+        /*for(Integer key : data.keySet()){
             data.put(key, filterPoints(data.get(key)));
-        }
+        }*/
         //this.result = new ArrayList<RoadSegment>();
         this.sigma1 = 5;
         this.sigma2 = 5;
@@ -41,18 +41,19 @@ public class MapConstruction {
         this.roadSegmentId = 0;
         ruteId  = 0;
         sanityCheck();
-        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
-        LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
-        xPixelWidth = 300;
-        yPixelWidth = 300;
+        LatLonPoint.Double min = new LatLonPoint.Double(56.041592, 8.686694);
+        LatLonPoint.Double max = new LatLonPoint.Double(56.229786, 9.166637);
         minUTM = new UTMPoint(min);
         maxUTM = new UTMPoint(max);
-        Grid testGrid = new Grid(xPixelWidth, yPixelWidth, 8, minUTM, maxUTM);
+        Grid testGrid = new Grid(10, 10, 8, minUTM, maxUTM);
+        xPixelWidth = testGrid.getXPixelWidth();
+        yPixelWidth = testGrid.getYPixelWidth();
         //Grid testGrid = new Grid(5, 5, 8, 5, 5, 100, 100);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
-                testGrid.addSegment(list.get(i-1), list.get(i));
+                //if(list.get(i-1).getX()==497588.0 && list.get(i-1).getY()==6224757.0)
+                    testGrid.addSegment(list.get(i-1), list.get(i));
             }
         }
         HashMap<Integer, ArrayList<GridPosition>> components = testGrid.getComponents();
@@ -95,7 +96,7 @@ public class MapConstruction {
                 UTMPoint current = new UTMPoint((g.getY()*yPixelWidth)+minUTM.northing, (g.getX()*xPixelWidth)+minUTM.easting, 32, 'N');
                 //UTMPoint current = new UTMPoint((g.getY()*5)+5, (g.getX()*5)+5, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
-                Point p =  new Point(l.getLatitude(), l.getLongitude(), current.northing, current.easting, "", pointId++, key);
+                Point p =  new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key);
                 list.add(p);
             }
             result.put(key, list);

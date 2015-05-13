@@ -67,8 +67,17 @@ public class Point {
         return pointId;
     }
 
-    public boolean equals(Point p){
-        return (pointId == p.getPointId() && ruteId == p.getRuteId());
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof Point))
+            return false;
+        Point p = (Point) obj;
+        return (x == p.getX() && y == p.getY());
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) Math.pow(x * 31,y);
     }
 
     public void updatePoint(double force, Point p, double distance){

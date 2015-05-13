@@ -32,6 +32,7 @@ public class HerningCyklerDataLoader {
             conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
             // Execute query
             stmt = conn.createStatement();
+            //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
             String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt ORDER BY PunktId";
             ResultSet rs = stmt.executeQuery(sql);
             // Extract data from result set
@@ -50,14 +51,16 @@ public class HerningCyklerDataLoader {
                     if (currentRuteId == ruteId) {
                         tempList.add(p);
                     } else {
-                        allTrips.put(currentRuteId, tempList);
+                        if(currentRuteId != 0){
+                            allTrips.put(currentRuteId, tempList);
+                            tempList = new ArrayList<Point>();
+                        }
                         currentRuteId = ruteId;
-                        tempList = new ArrayList<Point>();
                         tempList.add(p);
                     }
                 }
-                allTrips.put(currentRuteId, tempList);
             }
+            allTrips.put(currentRuteId, tempList);
             // Clean-up environment
             rs.close();
             stmt.close();

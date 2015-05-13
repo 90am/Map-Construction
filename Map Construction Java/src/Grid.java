@@ -16,18 +16,20 @@ public class Grid {
     private int angles;
     private int componentId;
 
-    public Grid(double xWidth, double yWidth, int angles, UTMPoint min, UTMPoint max){
+    public Grid(double xPixelWidth, double yPixelWidth, int angles, UTMPoint min, UTMPoint max){
         gridValues = new HashMap<GridPosition, int[]>();
         this.angles = angles;
         this.xMin = min.easting;
         this.xMax = max.easting;
         this.yMin = min.northing;
         this.yMax = max.northing;
-        double xDist = xMax-xMin;
+        /*double xDist = xMax-xMin;
         double yDist = yMax-yMin;
         double ration = xDist/yDist;
         xPixelWidth = (xMax-xMin)/xWidth;
-        yPixelWidth = (yMax-yMin)/(xWidth/ration);
+        yPixelWidth = (yMax-yMin)/(xWidth/ration);*/
+        this.xPixelWidth = xPixelWidth;
+        this.yPixelWidth = yPixelWidth;
         componentId = 0;
     }
 
@@ -64,20 +66,32 @@ public class Grid {
                 component.add(g);
                 addedToComponent.add(g);
                 int angle = maxAng(g);
-                while(toVisit.size() > 0){
-                    GridPosition current = toVisit.poll();
-                    for(GridPosition neighbour : getNeighbors(current)){
-                        if(!visited.contains(neighbour)){
-                            visited.add(neighbour);
-                            if(angle == maxAng(neighbour)){
-                                toVisit.add(neighbour);
-                                component.add(neighbour);
-                                addedToComponent.add(neighbour);
+                if(gridValues.get(g)[angle] > 3){
+                    while(toVisit.size() > 0){
+                        GridPosition current = toVisit.poll();
+                        for(GridPosition neighbour : getNeighbors(current)){
+                            if(!visited.contains(neighbour)){
+                                visited.add(neighbour);
+                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 3){
+                                    toVisit.add(neighbour);
+                                    component.add(neighbour);
+                                    addedToComponent.add(neighbour);
+                                }
                             }
                         }
                     }
+                    if(component.size() > 2){
+                        boolean one = component.get(0).getX() > component.get(1).getX() && component.get(0).getY() > component.get(1).getY();
+                        boolean two = component.get(0).getX() < component.get(1).getX() && component.get(0).getY() < component.get(1).getY();
+                        if(one && two){
+                            Collections.sort(component, new comparator1());
+                        }
+                        else{
+                            Collections.sort(component, new comparator2());
+                        }
+                    }
+                    components.put(getComponentId(), component);
                 }
-                components.put(getComponentId(), component);
             }
         }
         return components;
@@ -92,7 +106,7 @@ public class Grid {
         ArrayList<GridPosition> result = new ArrayList<GridPosition>();
         for(int i=(int)g.getX()-1; i<= g.getX()+1; i++){
             for(int j=(int)g.getY()-1; j<=g.getY()+1; j++){
-                if(!(i==(int)g.getX() && j==(int)g.getY()) && gridValues.containsKey(new GridPosition(i, j))){
+                if(!(i == g.getX() && j == g.getY()) && gridValues.containsKey(new GridPosition(i, j))){
                     result.add(new GridPosition(i, j));
                 }
             }
@@ -122,12 +136,16 @@ public class Grid {
         }
         double ang = getAngle(p1, p2);
         int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
-        int x = (int)Math.floor((p1.getX()-xMin)/xPixelWidth);
-        int y = (int)Math.floor((p1.getY()-yMin)/yPixelWidth);
-        int xStop = (int)Math.floor((p2.getX()-xMin)/xPixelWidth);
-        int yStop = (int)Math.floor((p2.getY()-yMin)/yPixelWidth);
+        int x = (int)((p1.getX()-xMin)/xPixelWidth);
+        int y = (int)((p1.getY()-yMin)/yPixelWidth);
+        int xStop = (int)((p2.getX()-xMin)/xPixelWidth);
+        int yStop = (int)((p2.getY()-yMin)/yPixelWidth);
         int xSteps = Math.abs(xStop-x);
         int ySteps = Math.abs(yStop-y);
+        //System.out.println("Point "+a.getNewX()+","+a.getY());
+        //System.out.println("Point "+b.getNewX()+","+b.getY());
+        //System.out.println("X steps " + xSteps);
+        //System.out.println("Y steps " + ySteps);
         if(ySteps >= xSteps){
             int step = 0;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
@@ -151,11 +169,12 @@ public class Grid {
         else{
             int step = 0;
             double yChange = (p2.getY() - p1.getY()) / xSteps;
-            while(step <= xSteps){
+            while(x != xStop){
                 double yVal = p1.getY() + (step*yChange);
                 y = (int) ((yVal-yMin)/yPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 int[] angl;
+                //System.out.println("x,y: " + x+","+y);
                 if(!gridValues.containsKey(g)){
                     angl = new int[angles];
                     gridValues.put(g,angl);
@@ -171,10 +190,29 @@ public class Grid {
 
     }
 
+    public void printAngl(int[] angl){
+        for(int i=0; i<angl.length; i++){
+            System.out.print(angl[i]+" ");
+        }
+    }
+
     public double getAngle(Point p1, Point p2){
         double dx = p2.getX()-p1.getX();
         double dy = p2.getY()-p1.getY();
         return Math.atan2(dy, dx);
+    }
+
+
+    class comparator1 implements Comparator<GridPosition> {
+        public int compare(GridPosition g1, GridPosition g2) {
+            return (int) ((g2.getX() - g2.getX())+(g2.getY()-g1.getY()) ) ;
+        }
+    }
+
+    class comparator2 implements Comparator<GridPosition> {
+        public int compare(GridPosition g1, GridPosition g2) {
+            return (int) ((g2.getX() - g2.getX())-(g2.getY()-g1.getY()) ) ;
+        }
     }
 
 }
