@@ -62,7 +62,7 @@ public class Grid2 {
             else{
                 gridValues.put(g, gridValues.get(g)+1);
             }
-            /*ArrayList<GridPosition> neighbors = getNeighbors(g);
+            ArrayList<GridPosition> neighbors = getNeighbors(g);
             for(GridPosition n : neighbors){
                 if(!gridValues.containsKey(n)){
                     gridValues.put(g, 0.5);
@@ -70,12 +70,37 @@ public class Grid2 {
                 else{
                     gridValues.put(n, gridValues.get(n)+0.5);
                 }
-            }*/
-
-            /*if(prevG != null){
-
             }
-            prevG = g;*/
+            if(prevG != null){
+                GridPosition first;
+                GridPosition second;
+                if(prevG.getX() < g.getX()){
+                    first = prevG;
+                    second = g;
+                }
+                else{
+                    first = g;
+                    second = prevG;
+                }
+                int step = 0;
+                int xSteps = (int) Math.abs(second.getX()-first.getX());
+                double x = first.getX();
+                double yChange = (second.getY() - first.getY()) / xSteps;
+                while(x != second.getX()){
+                    double yVal = first.getY() + (step*yChange);
+                    int y = (int) ((yVal-yMin)/yPixelWidth);
+                    GridPosition newG = new GridPosition(x, y);
+                    if(!gridValues.containsKey(newG)){
+                        gridValues.put(newG, 0.5);
+                    }
+                    else{
+                        gridValues.put(g, gridValues.get(newG)+0.5);
+                    }
+                    step++;
+                    x++;
+                }
+            }
+            prevG = g;
         }
     }
 

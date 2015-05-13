@@ -18,8 +18,8 @@ public class MapConstruction2 {
         this.data = data;
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-
-        grid = new Grid2(10, 10, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 10);
+        sanityCheck();
+        grid = new Grid2(3, 3, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 5);
         for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
         }
