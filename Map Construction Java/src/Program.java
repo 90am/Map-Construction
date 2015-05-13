@@ -6,9 +6,8 @@ import java.util.HashMap;
  */
 public class Program {
 
-
-
     public static void main(String[] args) {
+        // TEST OF SIMPLE CONVERSIONS
         /*HashMap<Integer, ArrayList<Point>> testDataSet = new HashMap<Integer, ArrayList<Point>>();
         ArrayList<Point> testList = new ArrayList<Point>();
         testList.add(new Point(0, 0, 10, 10, "", 1, 1));
@@ -24,10 +23,26 @@ public class Program {
         save.insertUpdatedPoints(load.getAllTrips());
         */
 
+        // LOAD RAW GPS TRACES INTO UPDATEDPOINTS TABLE
+        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
+        save.insertUpdatedPoints(load.getAllTrips());*/
+
+        //GRID WITH ANGLE TEST
+        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
+        MapConstruction test = new MapConstruction(load.getAllTrips());
+        save.insertComponents(test.getComponents());*/
+
+
+        //GRID2 gridprobabilities
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
-        save.insertUpdatedPoints(load.getAllTrips());
-
+        MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
+        save.insertPointProb(map.getResult());
     }
+
 }

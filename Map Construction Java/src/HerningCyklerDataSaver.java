@@ -96,4 +96,39 @@ public class HerningCyklerDataSaver {
             }
         }
     }
+
+    public void insertPointProb(HashMap<Point, Double> points ) {
+        Connection conn = null;
+        Statement stmt = null;
+        for (Point p : points.keySet()) {
+            try {
+                // Register jdbc driver and open connection
+                Class.forName(jdbc_driver);
+                conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
+                // Execute update
+                stmt = conn.createStatement();
+                String sql = " INSERT INTO pointProb (PointId, X, Y, Lat, Lon, Prob) VALUES ("+p.getPointId()+", "+p.getX()+
+                        ", "+p.getY()+", "+p.getLat()+", "+p.getLon()+", "+points.get(p)+")";
+                stmt.executeUpdate(sql);
+                stmt.close();
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (stmt != null)
+                        stmt.close();
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+                try {
+                    if (conn != null)
+                        conn.close();
+                } catch (SQLException se) {
+                    se.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

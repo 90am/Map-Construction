@@ -14,16 +14,26 @@ public class HerningCyklerDataLoader {
     private String herningCykler_user = "HerningUser";
     private String herningCykler_password = "herningpass";
     private HashMap<Integer, ArrayList<Point>> allTrips;
+    private LatLonPoint.Double min;
+    private LatLonPoint.Double max;
 
     public HerningCyklerDataLoader(){
         allTrips = new HashMap<Integer, ArrayList<Point>>();
+        min = new LatLonPoint.Double(56.1288653,8.9452581);
+        max = new LatLonPoint.Double(56.146625,8.9885811);
         addAllTrips();
+    }
+
+    public LatLonPoint.Double getMin(){
+        return min;
+    }
+
+    public LatLonPoint.Double getMax(){
+        return max;
     }
 
     private void addAllTrips(){
         System.out.println("Loading all trips");
-        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
-        LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         Connection conn = null;
         Statement stmt = null;
         try{

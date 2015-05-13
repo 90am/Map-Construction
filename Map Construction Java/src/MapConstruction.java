@@ -64,29 +64,6 @@ public class MapConstruction {
         clarify();*/
     }
 
-    // Remove very bad point;
-    private ArrayList<Point> filterPoints(ArrayList<Point> points){
-        ArrayList<Point> result = new ArrayList<Point>();
-        Point prev = points.get(0);
-        result.add(prev);
-        int skipped = 0;
-        for(int i=1; i<points.size(); i++){
-            Date fromTime = getDateFromString(prev.getTime());
-            Date toTime = getDateFromString(points.get(i).getTime());
-            double timeSpan = (toTime.getTime() - fromTime.getTime()) / 1000;
-            double distance  = getDistancePointToPoint(prev.getX(), prev.getY(), points.get(i).getX(), points.get(i).getY());
-            double ms = distance / timeSpan;
-            if(ms < 40){
-                prev = points.get(i);
-                result.add(prev);
-            }
-            else{
-                skipped++;
-            }
-        }
-        return result;
-    }
-
     private HashMap<Integer, ArrayList<Point>> formatComponents(HashMap<Integer, ArrayList<GridPosition>> components){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         int pointId = 0;
