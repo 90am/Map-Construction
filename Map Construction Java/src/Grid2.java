@@ -73,6 +73,7 @@ public class Grid2 {
 
     public void shrink(){
         HashMap<GridPosition, Double> result = new HashMap<GridPosition, Double>();
+        boolean foundSomethingToRemove = false;
         for(GridPosition g : gridValues.keySet()){
             ArrayList<GridPosition> neighbors = get8Neighborhood(g);
             int temp = 0;
@@ -91,9 +92,15 @@ public class Grid2 {
                 if (N != 1) {
                     result.put(g, gridValues.get(g));
                 }
+                else{
+                    foundSomethingToRemove = true;
+                }
             }
         }
         gridValues = result;
+        if(foundSomethingToRemove){
+            shrink();
+        }
     }
 
     private int contains(GridPosition g){
