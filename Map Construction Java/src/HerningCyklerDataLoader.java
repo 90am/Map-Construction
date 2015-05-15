@@ -43,7 +43,7 @@ public class HerningCyklerDataLoader {
             // Execute query
             stmt = conn.createStatement();
             //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
-            String sql ="SELECT PointId X, Y, Lat, Lon, Prob FROM pointProb";
+            String sql ="SELECT PointId, X, Y, Lat, Lon, Prob FROM pointProb";
             ResultSet rs = stmt.executeQuery(sql);
             // Extract data from result set
             while(rs.next()){

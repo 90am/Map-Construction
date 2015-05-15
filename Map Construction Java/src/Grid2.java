@@ -78,8 +78,8 @@ public class Grid2 {
             int N = 0;
             for(int i = 0; i<neighbors.size()-1; i++){
                 int one = contains(neighbors.get(i));
-                int two = contains(neighbors.get(i+1%8));
-                int three = contains(neighbors.get(i+2%8));
+                int two = contains(neighbors.get((i+1)%8));
+                int three = contains(neighbors.get((i+2)%8));
                 int value = (1-one)-((1-one)*(1-two)*(1-three));
                 N += value;
             }
