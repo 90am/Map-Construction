@@ -75,16 +75,22 @@ public class Grid2 {
         HashMap<GridPosition, Double> result = new HashMap<GridPosition, Double>();
         for(GridPosition g : gridValues.keySet()){
             ArrayList<GridPosition> neighbors = get8Neighborhood(g);
-            int N = 0;
-            for(int i = 0; i<neighbors.size()-1; i++){
-                int one = contains(neighbors.get(i));
-                int two = contains(neighbors.get((i+1)%8));
-                int three = contains(neighbors.get((i+2)%8));
-                int value = (1-one)-((1-one)*(1-two)*(1-three));
-                N += value;
+            int temp = 0;
+            for(GridPosition n : neighbors){
+                temp += contains(n);
             }
-            if(N != 1){
-                result.put(g, gridValues.get(g));
+            if(temp > 0) {
+                int N = 0;
+                for (int i = 0; i < neighbors.size() - 1; i++) {
+                    int one = contains(neighbors.get(i));
+                    int two = contains(neighbors.get((i + 1) % 8));
+                    int three = contains(neighbors.get((i + 2) % 8));
+                    int value = (1 - one) - ((1 - one) * (1 - two) * (1 - three));
+                    N += value;
+                }
+                if (N != 1) {
+                    result.put(g, gridValues.get(g));
+                }
             }
         }
         gridValues = result;
