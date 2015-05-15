@@ -18,12 +18,13 @@ public class MapConstruction2 {
         this.data = data;
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        sanityCheck();
-        grid = new Grid2(3, 3, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 5);
-        for(Integer key : data.keySet()){
+        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        grid = new Grid2(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 5);
+        /*for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
-        }
-        grid.binarize();
+        }*/
+        grid.replacePoints(load.getPoints());
+        System.out.println("Number of points loaded: "+ grid.getPoints().keySet().size() );
         grid.shrink();
     }
 

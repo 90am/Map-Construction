@@ -38,6 +38,13 @@ public class Grid2 {
         return yPixelWidth;
     }
 
+    public void replacePoints(HashMap<Point, Double> points){
+        gridValues = new HashMap<GridPosition, Double>();
+        for(Point p : points.keySet()){
+            GridPosition g = getGridPosition(p);
+            gridValues.put(g, points.get(p));
+        }
+    }
 
     public HashMap<Point, Double> getPoints(){
         HashMap<Point, Double> result = new HashMap<Point, Double>();
@@ -69,7 +76,7 @@ public class Grid2 {
         for(GridPosition g : gridValues.keySet()){
             ArrayList<GridPosition> neighbors = get8Neighborhood(g);
             int N = 0;
-            for(int i = 0; i<neighbors.size(); i++){
+            for(int i = 0; i<neighbors.size()-1; i++){
                 int one = contains(neighbors.get(i));
                 int two = contains(neighbors.get(i+1%8));
                 int three = contains(neighbors.get(i+2%8));

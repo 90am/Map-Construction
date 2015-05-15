@@ -40,9 +40,8 @@ public class Program {
         //GRID2 gridprobabilities
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
-        save.insertPointProb(map.getResult());
+        save.insertShrunkSkeleton(map.getResult());
     }
 
 }
