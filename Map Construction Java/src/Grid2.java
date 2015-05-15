@@ -83,7 +83,7 @@ public class Grid2 {
                 int value = (1-one)-((1-one)*(1-two)*(1-three));
                 N += value;
             }
-            if(N == 0){
+            if(N != 1){
                 result.put(g, gridValues.get(g));
             }
         }
