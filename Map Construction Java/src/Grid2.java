@@ -79,7 +79,7 @@ public class Grid2 {
             for(GridPosition n : neighbors){
                 temp += contains(n);
             }
-            if(temp > 0) {
+            if(temp > 0 && temp != 8) {
                 int N = 0;
                 for (int i = 0; i < neighbors.size() - 1; i++) {
                     int one = contains(neighbors.get(i));
