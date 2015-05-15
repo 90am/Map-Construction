@@ -39,17 +39,57 @@ public class Grid2 {
     }
 
 
-    public HashMap<Point, Double> getPossiblePoints(){
+    public HashMap<Point, Double> getPoints(){
         HashMap<Point, Double> result = new HashMap<Point, Double>();
         int pointId = 0;
         for(GridPosition g : gridValues.keySet()){
             UTMPoint current = new UTMPoint((g.getY()*yPixelWidth)+yMin, (g.getX()*xPixelWidth)+xMin, 32, 'N');
             LatLonPoint l = current.toLatLonPoint();
             Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, 0);
-            if(gridValues.get(g) > threshold)
-                result.put(p, gridValues.get(g));
+            result.put(p, gridValues.get(g));
         }
         return result;
+    }
+
+    public void blur(){
+
+    }
+
+    public void binarize(){
+        HashMap<GridPosition, Double> result = new HashMap<GridPosition, Double>();
+        for(GridPosition g : gridValues.keySet()){
+            if(gridValues.get(g) > threshold)
+                result.put(g, gridValues.get(g));
+        }
+        gridValues = result;
+    }
+
+    public void shrink(){
+        HashMap<GridPosition, Double> result = new HashMap<GridPosition, Double>();
+        for(GridPosition g : gridValues.keySet()){
+            ArrayList<GridPosition> neighbors = get8Neighborhood(g);
+            int N = 0;
+            for(int i = 0; i<neighbors.size(); i++){
+                int one = contains(neighbors.get(i));
+                int two = contains(neighbors.get(i+1%8));
+                int three = contains(neighbors.get(i+2%8));
+                int value = (1-one)-((1-one)*(1-two)*(1-three));
+                N += value;
+            }
+            if(N == 0){
+                result.put(g, gridValues.get(g));
+            }
+        }
+        gridValues = result;
+    }
+
+    private int contains(GridPosition g){
+        if(gridValues.containsKey(g)){
+            return 1;
+        }
+        else{
+            return 0;
+        }
     }
 
     public void addTrajectory(ArrayList<Point> trajectory){
@@ -115,6 +155,29 @@ public class Grid2 {
         }
         return result;
     }
+
+    public ArrayList<GridPosition> get8Neighborhood(GridPosition g){
+        ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+        ArrayList<GridPosition> result = new ArrayList<GridPosition>();
+        for(int i=(int)g.getX()-1; i<= g.getX()+1; i++){
+            for(int j=(int)g.getY()-1; j<=g.getY()+1; j++){
+                if(!(i == g.getX() && j == g.getY())){
+                    temp.add(new GridPosition(i, j));
+                }
+            }
+        }
+        result.add(temp.get(0));
+        result.add(temp.get(1));
+        result.add(temp.get(2));
+        result.add(temp.get(4));
+        result.add(temp.get(7));
+        result.add(temp.get(6));
+        result.add(temp.get(5));
+        result.add(temp.get(3));
+        return result;
+    }
+
+
 
     public GridPosition getGridPosition(Point p){
         int x = (int)((p.getX()-xMin)/xPixelWidth);

@@ -41,11 +41,11 @@ public class MapConstruction {
         this.roadSegmentId = 0;
         ruteId  = 0;
         sanityCheck();
-        LatLonPoint.Double min = new LatLonPoint.Double(56.041592, 8.686694);
-        LatLonPoint.Double max = new LatLonPoint.Double(56.229786, 9.166637);
+        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
+        LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         minUTM = new UTMPoint(min);
         maxUTM = new UTMPoint(max);
-        Grid testGrid = new Grid(10, 10, 8, minUTM, maxUTM);
+        Grid testGrid = new Grid(5, 5, 8, minUTM, maxUTM);
         xPixelWidth = testGrid.getXPixelWidth();
         yPixelWidth = testGrid.getYPixelWidth();
         //Grid testGrid = new Grid(5, 5, 8, 5, 5, 100, 100);

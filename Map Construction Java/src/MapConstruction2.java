@@ -23,10 +23,12 @@ public class MapConstruction2 {
         for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
         }
+        grid.binarize();
+        grid.shrink();
     }
 
     public HashMap<Point, Double> getResult(){
-        return grid.getPossiblePoints();
+        return grid.getPoints();
     }
 
     private void sanityCheck(){

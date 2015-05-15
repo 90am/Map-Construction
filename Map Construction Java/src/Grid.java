@@ -66,13 +66,13 @@ public class Grid {
                 component.add(g);
                 addedToComponent.add(g);
                 int angle = maxAng(g);
-                if(gridValues.get(g)[angle] > 3){
+                if(gridValues.get(g)[angle] > 5){
                     while(toVisit.size() > 0){
                         GridPosition current = toVisit.poll();
                         for(GridPosition neighbour : getNeighbors(current)){
                             if(!visited.contains(neighbour)){
                                 visited.add(neighbour);
-                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 3){
+                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 5){
                                     toVisit.add(neighbour);
                                     component.add(neighbour);
                                     addedToComponent.add(neighbour);
