@@ -19,17 +19,21 @@ public class MapConstruction2 {
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
-        grid = new Grid2(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 5);
-        /*for(Integer key : data.keySet()){
+        grid = new Grid2(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 2);
+        for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
-        }*/
-        grid.replacePoints(load.getPoints());
+        }
         System.out.println("Number of points loaded: "+ grid.getPoints().keySet().size() );
+        grid.binarize();
         grid.shrink();
     }
 
     public HashMap<Point, Double> getResult(){
         return grid.getPoints();
+    }
+
+    public HashMap<Integer, ArrayList<Point>> getBorderLines(){
+        return grid.getFormattedBorderLines();
     }
 
     private void sanityCheck(){

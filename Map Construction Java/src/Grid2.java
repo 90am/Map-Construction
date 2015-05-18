@@ -1,3 +1,4 @@
+import com.bbn.openmap.omGraphics.grid.OMGridObjects;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
 
@@ -17,6 +18,7 @@ public class Grid2 {
     private double yMax;
     private int angles;
     private double threshold;
+
 
     public Grid2(double xPixelWidth, double yPixelWidth, int angles, UTMPoint min, UTMPoint max, double threshold){
         gridValues = new HashMap<GridPosition, Double>();
@@ -58,8 +60,85 @@ public class Grid2 {
         return result;
     }
 
-    public void blur(){
+    public HashMap<Integer, ArrayList<GridPosition>> computeBorderLines(){
+        int borderId = 0;
+        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
+        for(GridPosition g : gridValues.keySet()){
+            ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+            temp.add(g);
+            ArrayList<GridPosition> neighborhood = get8Neighborhood(g);
+            GridPosition first = g;
+            GridPosition second = null;
+            int zero = getZeroElementIndex(neighborhood);
+            int start = getOneElementIndex(neighborhood, zero);
+            if(start != 9) {
+                second = neighborhood.get(start);
+                temp.add(second);
+                GridPosition prev = null;
+                GridPosition current = second;
+                while (!current.equals(second) && !prev.equals(first)) {
+                    neighborhood = get8Neighborhood(current);
+                    start = getOneElementIndex(neighborhood, start);
+                    if (start != 9) {
+                        prev = current;
+                        current = neighborhood.get(start);
+                        temp.add(current);
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if(temp.size() > 1){
+                result.put(borderId++, temp);
+            }
+        }
+        return result;
+    }
 
+    public HashMap<Integer, ArrayList<Point>> getFormattedBorderLines(){
+        int pointId = 0;
+        HashMap<Integer, ArrayList<GridPosition>> borderLines = computeBorderLines();
+        HashMap<Integer, ArrayList<Point>> result = new  HashMap<Integer, ArrayList<Point>>();
+        for(Integer key : borderLines.keySet()){
+            ArrayList<Point> list = new ArrayList<Point>();
+            for(GridPosition g : borderLines.get(key)) {
+                UTMPoint current = new UTMPoint((g.getY() * yPixelWidth) + yMin, (g.getX() * xPixelWidth) + xMin, 32, 'N');
+                LatLonPoint l = current.toLatLonPoint();
+                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, 0);
+                list.add(p);
+            }
+            result.put(key, list);
+        }
+        return result;
+    }
+
+    private int getOneElementIndex(ArrayList<GridPosition> neighborhood, int start){
+        int next = getNextIndexCounterclockwise(start);
+        while(next != start){
+            if(gridValues.containsKey(neighborhood.get(next))){
+                return next;
+            }
+            next = getNextIndexCounterclockwise(next);
+        }
+        return 9;
+    }
+
+    private int getNextIndexCounterclockwise(int start){
+        int next = start-1;
+        if(next < 0){
+            next = 7;
+        }
+        return next;
+    }
+
+    private int getZeroElementIndex(ArrayList<GridPosition> neighborhood){
+        int zero = 0;
+        for (int i = 0; i < neighborhood.size() - 1; i++) {
+            if (!gridValues.containsKey(neighborhood.get(i))) {
+                zero = i;
+            }
+        }
+        return zero;
     }
 
     public void binarize(){
