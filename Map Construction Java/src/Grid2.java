@@ -62,6 +62,7 @@ public class Grid2 {
 
     public HashMap<Integer, ArrayList<GridPosition>> computeBorderLines(){
         int borderId = 0;
+        int numberOfBreaks = 0;
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(GridPosition g : gridValues.keySet()){
             ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
@@ -84,6 +85,7 @@ public class Grid2 {
                         current = neighborhood.get(start);
                         temp.add(current);
                     } else {
+                        numberOfBreaks++;
                         break;
                     }
                 }
@@ -92,6 +94,7 @@ public class Grid2 {
                 result.put(borderId++, temp);
             }
         }
+        System.out.println("Number of breask: "+numberOfBreaks);
         return result;
     }
 
