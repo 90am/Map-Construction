@@ -75,13 +75,13 @@ public class Grid2 {
             if(start != 9) {
                 second = neighborhood.get(start);
                 temp.add(second);
-                GridPosition prev = null;
+                //GridPosition prev = null;
                 GridPosition current = second;
-                while (!current.equals(second) && !prev.equals(first)) {
+                while (!current.equals(first)) {
                     neighborhood = get8Neighborhood(current);
                     start = getOneElementIndex(neighborhood, start);
                     if (start != 9) {
-                        prev = current;
+                        //prev = current;
                         current = neighborhood.get(start);
                         temp.add(current);
                     } else {
@@ -94,7 +94,7 @@ public class Grid2 {
                 result.put(borderId++, temp);
             }
         }
-        System.out.println("Number of breask: "+numberOfBreaks);
+        System.out.println("Number of breaks: "+numberOfBreaks);
         return result;
     }
 
