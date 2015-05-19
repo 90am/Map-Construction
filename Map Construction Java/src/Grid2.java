@@ -104,7 +104,7 @@ public class Grid2 {
             for(GridPosition g : borderLines.get(key)) {
                 UTMPoint current = new UTMPoint((g.getY() * yPixelWidth) + yMin, (g.getX() * xPixelWidth) + xMin, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
-                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, 0);
+                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key);
                 list.add(p);
             }
             result.put(key, list);
