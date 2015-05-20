@@ -18,10 +18,18 @@ public class HerningCyklerDataLoader {
     private LatLonPoint.Double min;
     private LatLonPoint.Double max;
 
+    // SMALL TEST AREA
+    // min 56.135931,8.969493
+    // max 56.136672,8.975212
+
+    // BIG TEST AREA
+    // min 56.1288653,8.9452581
+    // max 56.146625,8.9885811
+
     public HerningCyklerDataLoader(){
         allTrips = new HashMap<Integer, ArrayList<Point>>();
-        min = new LatLonPoint.Double(56.1288653,8.9452581);
-        max = new LatLonPoint.Double(56.146625,8.9885811);
+        min = new LatLonPoint.Double(56.135931,8.969493);
+        max = new LatLonPoint.Double(56.136672,8.975212);
     }
 
     public LatLonPoint.Double getMin(){
