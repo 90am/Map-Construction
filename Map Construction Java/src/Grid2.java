@@ -62,39 +62,41 @@ public class Grid2 {
 
     public HashMap<Integer, ArrayList<GridPosition>> computeBorderLines(){
         int borderId = 0;
-        int numberOfBreaks = 0;
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
+        HashSet<GridPosition> test  = new HashSet<GridPosition>();
         for(GridPosition g : gridValues.keySet()){
             ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
             temp.add(g);
+            test.add(g);
             ArrayList<GridPosition> neighborhood = get8Neighborhood(g);
-            GridPosition first = g;
-            GridPosition second = null;
             int zero = getZeroElementIndex(neighborhood);
             int start = getOneElementIndex(neighborhood, zero);
             if(start != 9) {
-                second = neighborhood.get(start);
-                temp.add(second);
-                //GridPosition prev = null;
-                GridPosition current = second;
-                while (!current.equals(first)) {
+                GridPosition current = neighborhood.get(start);
+                temp.add(current);
+                test.add(current);
+                while (!current.equals(g) && start != 9) {
                     neighborhood = get8Neighborhood(current);
                     start = getOneElementIndex(neighborhood, start);
                     if (start != 9) {
-                        //prev = current;
                         current = neighborhood.get(start);
-                        temp.add(current);
-                    } else {
-                        numberOfBreaks++;
-                        break;
+                        if(!test.contains(current)){
+                            temp.add(current);
+                            test.add(current);
+                        }
+                        else{
+                           break;
+                        }
+                        if(temp.size() > 100){
+                            break;
+                        }
                     }
                 }
             }
-            if(temp.size() > 1){
+            if(temp.size() > 2){
                 result.put(borderId++, temp);
             }
         }
-        System.out.println("Number of breaks: "+numberOfBreaks);
         return result;
     }
 
