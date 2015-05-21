@@ -75,13 +75,17 @@ public class Grid {
                 PolynomialCurveFitter fitter = PolynomialCurveFitter.create(3);
                 double[] coeff = fitter.fit(obs.toList());
                 PolynomialFunction poly = new PolynomialFunction(coeff);
-                double middleX = (minX + maxX) / 2;
                 double minY = poly.value(minX);
-                double middleY = poly.value(middleX);
-                double maxY = poly.value(maxX);
                 ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                 temp.add(new GridPosition(minX, minY));
-                temp.add(new GridPosition(middleX, middleY));
+                double tempX = minX;
+                double tempY;
+                while(tempX+5 < maxX){
+                    tempX += 5;
+                    tempY = poly.value(tempX);
+                    temp.add(new GridPosition(tempX, tempY));
+                }
+                double maxY = poly.value(maxX);
                 temp.add(new GridPosition(maxX, maxY));
                 result.put(key, temp);
             }
