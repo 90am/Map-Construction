@@ -24,19 +24,19 @@ public class Program {
         */
 
         // LOAD RAW GPS TRACES INTO UPDATEDPOINTS TABLE
-        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
-        load.addAllTrips();
-        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
-        save.insertUpdatedPoints(load.getAllTrips());
-
-        //GRID WITH ANGLE TEST
         /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         load.addAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
+        save.insertUpdatedPoints(load.getAllTrips());*/
+
+        //GRID WITH ANGLE TEST
+        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        load.addAllTrips();
+        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction test = new MapConstruction(load.getAllTrips());
-        save.insertComponents(test.getComponents());*/
+        save.insertComponents(test.getResult());
 
 
         //GRID2 gridprobabilities

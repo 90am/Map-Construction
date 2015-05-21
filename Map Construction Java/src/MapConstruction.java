@@ -14,7 +14,7 @@ import java.util.List;
 public class MapConstruction {
 
     private HashMap<Integer, ArrayList<Point>> data;
-    HashMap<Integer, ArrayList<Point>> componentsFormatted;
+    HashMap<Integer, ArrayList<Point>> dataFormatted;
     //private ArrayList<RoadSegment> result;
     private double sigma1;
     private double sigma2;
@@ -45,7 +45,7 @@ public class MapConstruction {
         LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
         minUTM = new UTMPoint(min);
         maxUTM = new UTMPoint(max);
-        Grid testGrid = new Grid(5, 5, 8, minUTM, maxUTM);
+        Grid testGrid = new Grid(2, 2, 8, minUTM, maxUTM);
         xPixelWidth = testGrid.getXPixelWidth();
         yPixelWidth = testGrid.getYPixelWidth();
         //Grid testGrid = new Grid(5, 5, 8, 5, 5, 100, 100);
@@ -57,14 +57,14 @@ public class MapConstruction {
             }
         }
         HashMap<Integer, ArrayList<GridPosition>> lines = testGrid.computeLines();
-        componentsFormatted = formatComponents(lines);
+        dataFormatted = format(lines);
         System.out.println("Number of lines found: " + lines.keySet().size());
 
         /*
         clarify();*/
     }
 
-    private HashMap<Integer, ArrayList<Point>> formatComponents(HashMap<Integer, ArrayList<GridPosition>> components){
+    private HashMap<Integer, ArrayList<Point>> format(HashMap<Integer, ArrayList<GridPosition>> components){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         int pointId = 0;
         for(Integer key : components.keySet()){
@@ -206,8 +206,8 @@ public class MapConstruction {
         return data;
     }
 
-    public HashMap<Integer, ArrayList<Point>> getComponents(){
-        return componentsFormatted;
+    public HashMap<Integer, ArrayList<Point>> getResult(){
+        return dataFormatted;
     }
 
     private Date getDateFromString(String s){

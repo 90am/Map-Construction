@@ -98,7 +98,7 @@ public class Grid {
                         for(GridPosition neighbour : getNeighbors(current)){
                             if(!visited.contains(neighbour)){
                                 visited.add(neighbour);
-                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 5){
+                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 2){
                                     toVisit.add(neighbour);
                                     component.add(neighbour);
                                     addedToComponent.add(neighbour);
