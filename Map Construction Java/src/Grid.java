@@ -1,4 +1,7 @@
 import com.bbn.openmap.proj.coords.UTMPoint;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import java.util.*;
@@ -54,27 +57,61 @@ public class Grid {
         return yPixelWidth;
     }
 
+    public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
+        HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
+        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
+        for(Integer key : components.keySet()) {
+            if(components.get(key).size() > 1) {
+                WeightedObservedPoints obs = new WeightedObservedPoints();
+                double minX = Double.MAX_VALUE;
+                double maxX = 0;
+                for (GridPosition g : components.get(key)) {
+                    if (g.getX() < minX)
+                        minX = g.getX();
+                    if (g.getX() > maxX)
+                        maxX = g.getX();
+                    obs.add(g.getX(), g.getY());
+                }
+                PolynomialCurveFitter fitter = PolynomialCurveFitter.create(3);
+                double[] coeff = fitter.fit(obs.toList());
+                PolynomialFunction poly = new PolynomialFunction(coeff);
+                double middleX = (minX + maxX) / 2;
+                double minY = poly.value(minX);
+                double middleY = poly.value(middleX);
+                double maxY = poly.value(maxX);
+                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                temp.add(new GridPosition(minX, minY));
+                temp.add(new GridPosition(middleX, middleY));
+                temp.add(new GridPosition(maxX, maxY));
+                result.put(key, temp);
+            }
+        }
+        return result;
+    }
+
+
     public HashMap<Integer, ArrayList<GridPosition>> computeLines(){
         HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : components.keySet()){
-            SimpleRegression regression = new SimpleRegression();
-            double minX = Double.MAX_VALUE;
-            double maxX = 0;
-            for(GridPosition g : components.get(key)){
-                if(g.getX() < minX)
-                    minX = g.getX();
-                if(g.getX() > maxX)
-                    maxX = g.getX();
-
-                regression.addData(g.getX(), g.getY());
+            if(components.get(key).size() > 1) {
+                SimpleRegression regression = new SimpleRegression();
+                double minX = Double.MAX_VALUE;
+                double maxX = 0;
+                for (GridPosition g : components.get(key)) {
+                    if (g.getX() < minX)
+                        minX = g.getX();
+                    if (g.getX() > maxX)
+                        maxX = g.getX();
+                    regression.addData(g.getX(), g.getY());
+                }
+                double minY = regression.predict(minX);
+                double maxY = regression.predict(maxX);
+                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                temp.add(new GridPosition(minX, minY));
+                temp.add(new GridPosition(maxX, maxY));
+                result.put(key, temp);
             }
-            double minY = regression.predict(minX);
-            double maxY = regression.predict(maxX);
-            ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
-            temp.add(new GridPosition(minX, minY));
-            temp.add(new GridPosition(maxX, maxY));
-            result.put(key, temp);
         }
         return result;
     }
