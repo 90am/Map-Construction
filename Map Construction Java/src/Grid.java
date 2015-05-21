@@ -1,4 +1,5 @@
 import com.bbn.openmap.proj.coords.UTMPoint;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import java.util.*;
 
@@ -51,6 +52,31 @@ public class Grid {
 
     public double getYPixelWidth(){
         return yPixelWidth;
+    }
+
+    public HashMap<Integer, ArrayList<GridPosition>> computeLines(){
+        HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
+        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
+        for(Integer key : components.keySet()){
+            SimpleRegression regression = new SimpleRegression();
+            double minX = Double.MAX_VALUE;
+            double maxX = 0;
+            for(GridPosition g : components.get(key)){
+                if(g.getX() < minX)
+                    minX = g.getX();
+                if(g.getX() > maxX)
+                    maxX = g.getX();
+
+                regression.addData(g.getX(), g.getY());
+            }
+            double minY = regression.predict(minX);
+            double maxY = regression.predict(maxX);
+            ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+            temp.add(new GridPosition(minX, minY));
+            temp.add(new GridPosition(maxX, maxY));
+            result.put(key, temp);
+        }
+        return result;
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){

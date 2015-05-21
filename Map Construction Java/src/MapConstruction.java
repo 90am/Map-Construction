@@ -56,9 +56,9 @@ public class MapConstruction {
                     testGrid.addSegment(list.get(i-1), list.get(i));
             }
         }
-        HashMap<Integer, ArrayList<GridPosition>> components = testGrid.getComponents();
-        componentsFormatted = formatComponents(components);
-        System.out.println("Number of components found: " + components.keySet().size());
+        HashMap<Integer, ArrayList<GridPosition>> lines = testGrid.computeLines();
+        componentsFormatted = formatComponents(lines);
+        System.out.println("Number of lines found: " + lines.keySet().size());
 
         /*
         clarify();*/

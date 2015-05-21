@@ -1,6 +1,7 @@
 import com.bbn.openmap.omGraphics.grid.OMGridObjects;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import java.util.*;
 
