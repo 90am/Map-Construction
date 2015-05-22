@@ -90,7 +90,7 @@ public class Grid3 {
                 if(gridValues.get(g)[angle] > 2){
                     while(toVisit.size() > 0){
                         GridPosition current = toVisit.poll();
-                        for(GridPosition neighbour : getNeighbors(current)){
+                        for(GridPosition neighbour : getNeighborsWithProbability(current)){
                             if(!visited.contains(neighbour)){
                                 visited.add(neighbour);
                                 if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 2){
