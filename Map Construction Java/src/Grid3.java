@@ -108,6 +108,69 @@ public class Grid3 {
         return components;
     }
 
+    public void addSegment(Point a, Point b){
+        Point p1 = a;
+        Point p2 = b;
+        if(a.getY() > b.getY()){
+            p1 = b;
+            p2 = a;
+        }
+        double ang = util.getAngle(p1, p2);
+        int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
+        int x = (int)((p1.getX()-xMin)/xPixelWidth);
+        int y = (int)((p1.getY()-yMin)/yPixelWidth);
+        int xStop = (int)((p2.getX()-xMin)/xPixelWidth);
+        int yStop = (int)((p2.getY()-yMin)/yPixelWidth);
+        int xSteps = Math.abs(xStop-x);
+        int ySteps = Math.abs(yStop-y);
+        //System.out.println("Point "+a.getNewX()+","+a.getY());
+        //System.out.println("Point "+b.getNewX()+","+b.getY());
+        //System.out.println("X steps " + xSteps);
+        //System.out.println("Y steps " + ySteps);
+        if(ySteps >= xSteps){
+            int step = 0;
+            double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
+            while(y <= yStop){
+                double xVal = p1.getX() + (step*xChange);
+                x = (int) ((xVal-xMin)/xPixelWidth);
+                GridPosition g = new GridPosition(x, y);
+                double[] angl;
+                if(!gridValues.containsKey(g)){
+                    angl = new double[angles];
+                    gridValues.put(g,angl);
+                }
+                else{
+                    angl = gridValues.get(g);
+                }
+                angl[angIdx]++;
+                y++;
+                step++;
+            }
+        }
+        else{
+            int step = 0;
+            double yChange = (p2.getY() - p1.getY()) / xSteps;
+            while(x != xStop){
+                double yVal = p1.getY() + (step*yChange);
+                y = (int) ((yVal-yMin)/yPixelWidth);
+                GridPosition g = new GridPosition(x, y);
+                double[] angl;
+                //System.out.println("x,y: " + x+","+y);
+                if(!gridValues.containsKey(g)){
+                    angl = new double[angles];
+                    gridValues.put(g,angl);
+                }
+                else{
+                    angl = gridValues.get(g);
+                }
+                angl[angIdx]++;
+                x += Math.signum(xStop-x);
+                step++;
+            }
+        }
+
+    }
+
 
     public HashMap<Integer, ArrayList<GridPosition>> getComponents2(){
         HashMap<GridPosition, double[]> dataSet = gridValues;
