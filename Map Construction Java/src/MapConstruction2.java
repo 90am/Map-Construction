@@ -18,13 +18,12 @@ public class MapConstruction2 {
         this.data = data;
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        //filterPoints();
+        filterPoints();
         sanityCheck();
         grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 2);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
-                //if(list.get(i-1).getX()==497588.0 && list.get(i-1).getY()==6224757.0)
                 grid.addSegment(list.get(i-1), list.get(i));
             }
         }
