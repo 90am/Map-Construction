@@ -66,7 +66,14 @@ public class Grid3 {
     }
 
 
-
+    public void binarize(){
+        HashMap<GridPosition, double[] > result = new HashMap<GridPosition, double[]>();
+        for(GridPosition g : gridValues.keySet()){
+            if(getMaxAngle(g) > threshold)
+                result.put(g, gridValues.get(g));
+        }
+        gridValues = result;
+    }
 
 
     public void addTrajectory(ArrayList<Point> trajectory) {
