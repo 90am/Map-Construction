@@ -1,8 +1,7 @@
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created by Andreas on 22/05/15.
@@ -65,6 +64,51 @@ public class Grid3 {
         return value;
     }
 
+    public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
+        HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
+        return util.curveFitting(components, 10, 3);
+    }
+
+    public HashMap<Integer, ArrayList<Point>> getFormattedCurves(){
+        return util.formatGridPositions(computeCurves(), xPixelWidth, yPixelWidth, xMin, yMin);
+    }
+
+    public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
+        HashMap<GridPosition, double[]> dataSet = gridValues;
+        int componentId = 0;
+        HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
+        for(GridPosition g : dataSet.keySet()){
+            double[] angles = dataSet.get(g);
+            for(int i=0; i<8; i++) {
+                if(angles[i] > 2){
+                    HashSet<GridPosition> visited = new HashSet<GridPosition>();
+                    ArrayList<GridPosition> component = new ArrayList<GridPosition>();
+                    LinkedList<GridPosition> toVisit = new LinkedList<GridPosition>();
+                    visited.add(g);
+                    component.add(g);
+                    toVisit.add(g);
+                    dataSet.get(g)[i] = 0;
+                    while(toVisit.size() > 0){
+                        GridPosition current = toVisit.poll();
+                        for (GridPosition n : getNeighbors(current)) {
+                            if (!visited.contains(n)) {
+                                visited.add(n);
+                                if (dataSet.get(n)[i] > 2) {
+                                    toVisit.add(n);
+                                    component.add(n);
+                                    dataSet.get(n)[i] = 0;
+                                }
+                            }
+                        }
+                    }
+                    if(component.size() > 2){
+                        components.put(componentId++, component);
+                    }
+                }
+            }
+        }
+        return components;
+    }
 
     public void binarize(){
         HashMap<GridPosition, double[] > result = new HashMap<GridPosition, double[]>();
@@ -74,7 +118,6 @@ public class Grid3 {
         }
         gridValues = result;
     }
-
 
     public void addTrajectory(ArrayList<Point> trajectory) {
         for (int i = 1; i < trajectory.size() - 1; i++) {

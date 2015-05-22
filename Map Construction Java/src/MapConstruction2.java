@@ -20,15 +20,14 @@ public class MapConstruction2 {
         this.maxLatLon = maxLatLon;
         filterPoints();
         sanityCheck();
-        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 3);
+        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 2);
         for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
         }
-        grid.binarize();
     }
 
-    public HashMap<Point, Double> getResult(){
-        return grid.getPoints();
+    public HashMap<Integer, ArrayList<Point>> getResult(){
+        return grid.getFormattedCurves();
     }
 
     private void filterPoints(){
