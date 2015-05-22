@@ -66,8 +66,12 @@ public class Grid3 {
 
     public void addTrajectory(ArrayList<Point> trajectory) {
         for (int i = 1; i < trajectory.size() - 1; i++) {
-            Point p1 = trajectory.get(i - 1);
+            Point p1 = trajectory.get(i-1);
             Point p2 = trajectory.get(i);
+            if(p1.getX() > p2.getX()){
+                p1 = p2;
+                p2 = trajectory.get(i-1);
+            }
             double ang = util.getAngle(p1, p2);
             int angleIndex = (int) Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
             GridPosition g1 = getGridPosition(p1);
@@ -91,10 +95,6 @@ public class Grid3 {
             }
             // Add probability for points on segment
             GridPosition g2 = getGridPosition(p2);
-            if (g1.getX() > g2.getX()) {
-                g1 = g2;
-                g2 = getGridPosition(p1);
-            }
             int step = 1;
             double x = g1.getX() + 1;
             int xSteps = (int) Math.abs(g2.getX() - g1.getX());
