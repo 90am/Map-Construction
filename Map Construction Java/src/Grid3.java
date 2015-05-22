@@ -102,21 +102,23 @@ public class Grid3 {
                 g1 = g2;
                 g2 = getGridPosition(p1);
             }
-            int step = 1;
-            double x = g1.getX() + 1;
+            int step = 0;
+            double x = g1.getX();
             int xSteps = (int) Math.abs(g2.getX() - g1.getX());
             double yChange = (g2.getY() - g1.getY()) / xSteps;
             while (x != g2.getX()) {
-                double yVal = g1.getY() + (step*yChange);
-                int y = (int) ((yVal-yMin)/yPixelWidth);
-                GridPosition newG = new GridPosition(x, y);
-                if (!gridValues.containsKey(newG)) {
-                    angleArray = new double[angles];
-                } else {
-                    angleArray = gridValues.get(newG);
+                if(step != 0){
+                    double yVal = g1.getY() + (step*yChange);
+                    int y = (int) ((yVal-yMin)/yPixelWidth);
+                    GridPosition newG = new GridPosition(x, y);
+                    if (!gridValues.containsKey(newG)) {
+                        angleArray = new double[angles];
+                    } else {
+                        angleArray = gridValues.get(newG);
+                    }
+                    angleArray[angleIndex] += 0.5;
+                    gridValues.put(newG, angleArray);
                 }
-                angleArray[angleIndex] += 0.5;
-                gridValues.put(newG, angleArray);
                 step++;
                 x++;
             }
