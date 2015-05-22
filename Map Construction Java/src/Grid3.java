@@ -65,10 +65,15 @@ public class Grid3 {
         return value;
     }
 
+
+
+
+
     public void addTrajectory(ArrayList<Point> trajectory) {
         for (int i = 1; i < trajectory.size() - 1; i++) {
             Point p1 = trajectory.get(i-1);
             Point p2 = trajectory.get(i);
+            double distance = util.getDistancePointToPoint(p1, p2);
             double ang = 0;
             if(p2.getY() < p1.getY())
                 ang = util.getAngle(p2, p1);
@@ -114,7 +119,7 @@ public class Grid3 {
                     } else {
                         angleArray = gridValues.get(newG);
                     }
-                    angleArray[angleIndex] += 0.5;
+                    angleArray[angleIndex] += 1/distance;
                     gridValues.put(newG, angleArray);
                 }
                 step++;

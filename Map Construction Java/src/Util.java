@@ -99,4 +99,10 @@ public class Util {
         return result;
     }
 
+    public double getDistancePointToPoint(Point p1, Point p2){
+        double xd = p2.getX()-p1.getX();
+        double yd = p2.getY()-p1.getY();
+        return Math.sqrt(xd*xd+yd*yd);
+    }
+
 }
