@@ -69,14 +69,12 @@ public class Grid3 {
         for (int i = 1; i < trajectory.size() - 1; i++) {
             Point p1 = trajectory.get(i-1);
             Point p2 = trajectory.get(i);
-            if(p2.getY() < p1.getY()){
-                p1 = p2;
-                p2 = trajectory.get(i-1);
-            }
-            double ang = util.getAngle(p1, p2);
-            System.out.println("Angle: "+ang);
+            double ang = 0;
+            if(p2.getY() < p1.getY())
+                ang = util.getAngle(p2, p1);
+            else
+                ang = util.getAngle(p1, p2);
             int angleIndex = (int) Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
-            System.out.println("Angle index: "+angleIndex);
             GridPosition g1 = getGridPosition(p1);
             double[] angleArray = new double[angles];
             // Add probability for start point;
@@ -96,7 +94,7 @@ public class Grid3 {
                 angleArray[angleIndex] += 0.5;
                 gridValues.put(n, angleArray);
             }
-            // Add probability for points on segment
+            // Add probability for gridpositions between points
             GridPosition g2 = getGridPosition(p2);
             if (g1.getX() > g2.getX()) {
                 g1 = g2;
@@ -121,6 +119,27 @@ public class Grid3 {
                 }
                 step++;
                 x++;
+            }
+            // Add probability for last point in trajectory
+            if(i == trajectory.size()-1){
+                g2 = getGridPosition(p2);
+                if (!gridValues.containsKey(g2)) {
+                    angleArray = new double[angles];
+                } else {
+                    angleArray = gridValues.get(g2);
+                }
+                angleArray[angleIndex] += 1.0;
+                gridValues.put(g2, angleArray);
+                neighbors = getNeighbors(g2);
+                for (GridPosition n : neighbors) {
+                    if (!gridValues.containsKey(n)) {
+                        angleArray = new double[angles];
+                    } else {
+                        angleArray = gridValues.get(n);
+                    }
+                    angleArray[angleIndex] += 0.5;
+                    gridValues.put(n, angleArray);
+                }
             }
         }
     }
