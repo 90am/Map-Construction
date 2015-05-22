@@ -61,7 +61,7 @@ public class HerningCyklerDataLoader {
                 double x = rs.getDouble("X");
                 double y = rs.getDouble("Y");
                 double prob = rs.getDouble("Prob");
-                Point p = new Point(lat, lon, x, y, "", pointId, 0);
+                Point p = new Point(lat, lon, x, y, "", pointId, 0, 0);
                 result.put(p, prob);
             }
             // Clean-up environment
@@ -100,7 +100,7 @@ public class HerningCyklerDataLoader {
             // Execute query
             stmt = conn.createStatement();
             //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
-            String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt ORDER BY PunktId";
+            String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId, Accuracy FROM Punkt ORDER BY PunktId";
             ResultSet rs = stmt.executeQuery(sql);
             // Extract data from result set
             ArrayList<Point> tempList = new ArrayList<Point>();
@@ -113,7 +113,8 @@ public class HerningCyklerDataLoader {
                 String time = rs.getString("TimePoint");
                 int pointId = rs.getInt("PunktId");
                 int ruteId = rs.getInt("RuteID");
-                Point p = new Point(lat, lon, x, y, time, pointId, ruteId);
+                double accuracy = rs.getDouble("Accuracy");
+                Point p = new Point(lat, lon, x, y, time, pointId, ruteId, accuracy);
                 if(p.getLat() > min.getLatitude() && p.getLat() < max.getLatitude() && p.getLon() > min.getLongitude() && p.getLon() < max.getLongitude()) {
                     if (currentRuteId == ruteId) {
                         tempList.add(p);

@@ -18,7 +18,7 @@ public class MapConstruction2 {
         this.data = data;
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        filterPoints();
         grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 2);
         for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
@@ -27,6 +27,20 @@ public class MapConstruction2 {
 
     public HashMap<Point, Double> getResult(){
         return grid.getPoints();
+    }
+
+    private void filterPoints(){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        for(Integer key : data.keySet()){
+            ArrayList<Point> temp = new ArrayList<Point>();
+            for(Point p : data.get(key)){
+                if(p.getAccuracy() < 20){
+                    temp.add(p);
+                }
+            }
+            result.put(key, temp);
+        }
+        data = result;
     }
 
     private void sanityCheck(){
