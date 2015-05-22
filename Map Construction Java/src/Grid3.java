@@ -90,7 +90,7 @@ public class Grid3 {
                     dataSet.get(g)[i] = 0;
                     while(toVisit.size() > 0){
                         GridPosition current = toVisit.poll();
-                        for (GridPosition n : getNeighbors(current)) {
+                        for (GridPosition n : getNeighborsWithProbability(current)) {
                             if (!visited.contains(n)) {
                                 visited.add(n);
                                 if (dataSet.get(n)[i] > 2) {
@@ -204,6 +204,19 @@ public class Grid3 {
         for(int i=(int)g.getX()-1; i<= g.getX()+1; i++){
             for(int j=(int)g.getY()-1; j<=g.getY()+1; j++){
                 if(!(i == g.getX() && j == g.getY())){
+                    result.add(new GridPosition(i, j));
+                }
+            }
+        }
+        return result;
+    }
+
+
+    public ArrayList<GridPosition> getNeighborsWithProbability(GridPosition g){
+        ArrayList<GridPosition> result = new ArrayList<GridPosition>();
+        for(int i=(int)g.getX()-1; i<= g.getX()+1; i++){
+            for(int j=(int)g.getY()-1; j<=g.getY()+1; j++){
+                if(!(i == g.getX() && j == g.getY()) && gridValues.containsKey(new GridPosition(i, j))){
                     result.add(new GridPosition(i, j));
                 }
             }
