@@ -31,20 +31,20 @@ public class Program {
         save.insertUpdatedPoints(load.getAllTrips());*/
 
         //GRID WITH ANGLE TEST
-        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         load.addAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction test = new MapConstruction(load.getAllTrips());
-        save.insertComponents(test.getResult());
+        save.insertComponents(test.getResult()); */
 
 
         //GRID2 gridprobabilities
-        //HerningCyklerDataLoader load = new HerningCyklerDataLoader();
-        //load.addAllTrips();
-        //HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        //MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
-        //save.insertComponents(map.getBorderLines());
+        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        load.addAllTrips();
+        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
+        save.insertShrunkSkeleton(map.getResult());
 
     }
 }

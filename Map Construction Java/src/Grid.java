@@ -2,6 +2,7 @@ import com.bbn.openmap.proj.coords.UTMPoint;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import java.util.*;
@@ -10,6 +11,7 @@ import java.util.*;
  * Created by Andreas on 07/05/15.
  */
 public class Grid {
+    private Util util;
     private HashMap<GridPosition, int[]> gridValues;
     private double xPixelWidth;
     private double yPixelWidth;
@@ -21,6 +23,7 @@ public class Grid {
     private int componentId;
 
     public Grid(double xPixelWidth, double yPixelWidth, int angles, UTMPoint min, UTMPoint max){
+        util = new Util();
         gridValues = new HashMap<GridPosition, int[]>();
         this.angles = angles;
         this.xMin = min.easting;
@@ -59,65 +62,13 @@ public class Grid {
 
     public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
         HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
-        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
-        for(Integer key : components.keySet()) {
-            if(components.get(key).size() > 1) {
-                WeightedObservedPoints obs = new WeightedObservedPoints();
-                double minX = Double.MAX_VALUE;
-                double maxX = 0;
-                for (GridPosition g : components.get(key)) {
-                    if (g.getX() < minX)
-                        minX = g.getX();
-                    if (g.getX() > maxX)
-                        maxX = g.getX();
-                    obs.add(g.getX(), g.getY());
-                }
-                PolynomialCurveFitter fitter = PolynomialCurveFitter.create(3);
-                double[] coeff = fitter.fit(obs.toList());
-                PolynomialFunction poly = new PolynomialFunction(coeff);
-                double minY = poly.value(minX);
-                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
-                temp.add(new GridPosition(minX, minY));
-                double tempX = minX;
-                double tempY;
-                while(tempX+5 < maxX){
-                    tempX += 5;
-                    tempY = poly.value(tempX);
-                    temp.add(new GridPosition(tempX, tempY));
-                }
-                double maxY = poly.value(maxX);
-                temp.add(new GridPosition(maxX, maxY));
-                result.put(key, temp);
-            }
-        }
-        return result;
+        return util.curveFitting(components, 20, 3);
     }
 
 
     public HashMap<Integer, ArrayList<GridPosition>> computeLines(){
         HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
-        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
-        for(Integer key : components.keySet()){
-            if(components.get(key).size() > 1) {
-                SimpleRegression regression = new SimpleRegression();
-                double minX = Double.MAX_VALUE;
-                double maxX = 0;
-                for (GridPosition g : components.get(key)) {
-                    if (g.getX() < minX)
-                        minX = g.getX();
-                    if (g.getX() > maxX)
-                        maxX = g.getX();
-                    regression.addData(g.getX(), g.getY());
-                }
-                double minY = regression.predict(minX);
-                double maxY = regression.predict(maxX);
-                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
-                temp.add(new GridPosition(minX, minY));
-                temp.add(new GridPosition(maxX, maxY));
-                result.put(key, temp);
-            }
-        }
-        return result;
+        return util.linearRegression(components);
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
@@ -201,7 +152,7 @@ public class Grid {
             p1 = b;
             p2 = a;
         }
-        double ang = getAngle(p1, p2);
+        double ang = util.getAngle(p1, p2);
         int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
         int x = (int)((p1.getX()-xMin)/xPixelWidth);
         int y = (int)((p1.getY()-yMin)/yPixelWidth);
@@ -262,13 +213,6 @@ public class Grid {
             System.out.print(angl[i]+" ");
         }
     }
-
-    public double getAngle(Point p1, Point p2){
-        double dx = p2.getX()-p1.getX();
-        double dy = p2.getY()-p1.getY();
-        return Math.atan2(dy, dx);
-    }
-
 
     class comparator1 implements Comparator<GridPosition> {
         public int compare(GridPosition g1, GridPosition g2) {

@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class MapConstruction {
 
+    private Util util;
     private HashMap<Integer, ArrayList<Point>> data;
     HashMap<Integer, ArrayList<Point>> dataFormatted;
     //private ArrayList<RoadSegment> result;
@@ -29,6 +30,7 @@ public class MapConstruction {
     // min 56.1288653,8.9452581
     // max 56.146625,8.9885811
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
+        util = new Util();
         this.data = data;
         /*for(Integer key : data.keySet()){
             data.put(key, filterPoints(data.get(key)));
@@ -57,28 +59,11 @@ public class MapConstruction {
             }
         }
         HashMap<Integer, ArrayList<GridPosition>> lines = testGrid.computeLines();
-        dataFormatted = format(lines);
+        dataFormatted = util.formatGridPositions(lines, xPixelWidth, yPixelWidth, minUTM.easting, minUTM.northing);
         System.out.println("Number of lines found: " + lines.keySet().size());
 
         /*
         clarify();*/
-    }
-
-    private HashMap<Integer, ArrayList<Point>> format(HashMap<Integer, ArrayList<GridPosition>> components){
-        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
-        int pointId = 0;
-        for(Integer key : components.keySet()){
-            ArrayList<Point> list = new ArrayList<Point>();
-            for(GridPosition g : components.get(key)){
-                UTMPoint current = new UTMPoint((g.getY()*yPixelWidth)+minUTM.northing, (g.getX()*xPixelWidth)+minUTM.easting, 32, 'N');
-                //UTMPoint current = new UTMPoint((g.getY()*5)+5, (g.getX()*5)+5, 32, 'N');
-                LatLonPoint l = current.toLatLonPoint();
-                Point p =  new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key);
-                list.add(p);
-            }
-            result.put(key, list);
-        }
-        return result;
     }
 
     private void sanityCheck(){

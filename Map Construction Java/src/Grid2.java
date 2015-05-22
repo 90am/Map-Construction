@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class Grid2 {
 
+    private Util util;
     private HashMap<GridPosition, Double> gridValues;
     private double xPixelWidth;
     private double yPixelWidth;
@@ -22,6 +23,7 @@ public class Grid2 {
 
 
     public Grid2(double xPixelWidth, double yPixelWidth, int angles, UTMPoint min, UTMPoint max, double threshold){
+        util = new Util();
         gridValues = new HashMap<GridPosition, Double>();
         this.angles = angles;
         this.xMin = min.easting;
@@ -102,20 +104,8 @@ public class Grid2 {
     }
 
     public HashMap<Integer, ArrayList<Point>> getFormattedBorderLines(){
-        int pointId = 0;
         HashMap<Integer, ArrayList<GridPosition>> borderLines = computeBorderLines();
-        HashMap<Integer, ArrayList<Point>> result = new  HashMap<Integer, ArrayList<Point>>();
-        for(Integer key : borderLines.keySet()){
-            ArrayList<Point> list = new ArrayList<Point>();
-            for(GridPosition g : borderLines.get(key)) {
-                UTMPoint current = new UTMPoint((g.getY() * yPixelWidth) + yMin, (g.getX() * xPixelWidth) + xMin, 32, 'N');
-                LatLonPoint l = current.toLatLonPoint();
-                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key);
-                list.add(p);
-            }
-            result.put(key, list);
-        }
-        return result;
+        return util.formatGridPositions(borderLines, xPixelWidth, yPixelWidth, xMin, yMin);
     }
 
     private int getOneElementIndex(ArrayList<GridPosition> neighborhood, int start){
