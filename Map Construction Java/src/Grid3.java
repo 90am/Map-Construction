@@ -74,6 +74,42 @@ public class Grid3 {
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
+        HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
+        HashSet<GridPosition> addedToComponent = new HashSet<GridPosition>();
+        int componentId = 1;
+        for(GridPosition g : gridValues.keySet()){
+            if(!addedToComponent.contains(g)){
+                HashSet<GridPosition> visited = new HashSet<GridPosition>();
+                ArrayList<GridPosition> component = new ArrayList<GridPosition>();
+                visited.add(g);
+                LinkedList<GridPosition> toVisit = new LinkedList<GridPosition>();
+                toVisit.add(g);
+                component.add(g);
+                addedToComponent.add(g);
+                int angle = maxAng(g);
+                if(gridValues.get(g)[angle] > 2){
+                    while(toVisit.size() > 0){
+                        GridPosition current = toVisit.poll();
+                        for(GridPosition neighbour : getNeighbors(current)){
+                            if(!visited.contains(neighbour)){
+                                visited.add(neighbour);
+                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 2){
+                                    toVisit.add(neighbour);
+                                    component.add(neighbour);
+                                    addedToComponent.add(neighbour);
+                                }
+                            }
+                        }
+                    }
+                    components.put(componentId++, component);
+                }
+            }
+        }
+        return components;
+    }
+
+
+    public HashMap<Integer, ArrayList<GridPosition>> getComponents2(){
         HashMap<GridPosition, double[]> dataSet = gridValues;
         int componentId = 0;
         HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
@@ -228,5 +264,18 @@ public class Grid3 {
         int x = (int)((p.getX()-xMin)/xPixelWidth);
         int y = (int)((p.getY()-yMin)/yPixelWidth);
         return new GridPosition(x, y);
+    }
+
+    public int maxAng(GridPosition g){
+        double[] angleArrray = gridValues.get(g);
+        int max = 0;
+        double value = 0;
+        for(int i=0; i<angles-1; i++){
+            if(angleArrray[i] > value){
+                max = i;
+                value = angleArrray[i];
+            }
+        }
+        return max;
     }
 }
