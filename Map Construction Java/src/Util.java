@@ -91,7 +91,7 @@ public class Util {
             for(GridPosition g : data.get(key)) {
                 UTMPoint current = new UTMPoint((g.getY() * yPixelWidth) + yMin, (g.getX() * xPixelWidth) + xMin, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
-                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key);
+                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key, 0);
                 temp.add(p);
             }
             result.put(key, temp);

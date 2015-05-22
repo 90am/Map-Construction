@@ -19,6 +19,7 @@ public class MapConstruction2 {
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
         filterPoints();
+        sanityCheck();
         grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 2);
         for(Integer key : data.keySet()){
             grid.addTrajectory(data.get(key));
@@ -34,7 +35,7 @@ public class MapConstruction2 {
         for(Integer key : data.keySet()){
             ArrayList<Point> temp = new ArrayList<Point>();
             for(Point p : data.get(key)){
-                if(p.getAccuracy() < 20){
+                if(p.getAccuracy() < 15){
                     temp.add(p);
                 }
             }

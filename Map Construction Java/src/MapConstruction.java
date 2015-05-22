@@ -165,7 +165,7 @@ public class MapConstruction {
             double x = p1.getX()+ vx * b;
             double y = p1.getY()+ vy * b;
             bestDistance = getDistancePointToPoint(p.getX(), p.getY(), x, y);
-            bestPoint = new Point(0, 0, x, y, "", 0, 0);
+            bestPoint = new Point(0, 0, x, y, "", 0, 0, 0);
         }
         return bestPoint;
     }
