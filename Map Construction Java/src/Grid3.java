@@ -69,8 +69,14 @@ public class Grid3 {
         for (int i = 1; i < trajectory.size() - 1; i++) {
             Point p1 = trajectory.get(i-1);
             Point p2 = trajectory.get(i);
+            if(p2.getY() < p1.getY()){
+                p1 = p2;
+                p2 = trajectory.get(i-1);
+            }
             double ang = util.getAngle(p1, p2);
+            System.out.println("Angle: "+ang);
             int angleIndex = (int) Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
+            System.out.println("Angle index: "+angleIndex);
             GridPosition g1 = getGridPosition(p1);
             double[] angleArray = new double[angles];
             // Add probability for start point;
