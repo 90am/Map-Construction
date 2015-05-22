@@ -149,7 +149,7 @@ public class Grid3 {
 
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
         HashMap<GridPosition, double[]> dataSet = gridValues;
-        int componentId = 0;
+        int componentId = 1;
         HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
         for(GridPosition g : dataSet.keySet()){
             double[] angles = dataSet.get(g);
