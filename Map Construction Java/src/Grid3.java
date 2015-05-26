@@ -30,7 +30,7 @@ public class Grid3 {
         this.xPixelWidth = xPixelWidth;
         this.yPixelWidth = yPixelWidth;
         this.threshold = threshold;
-        this.angles = 8;
+        this.angles = angles;
     }
 
     public double getXPixelWidth(){
@@ -65,7 +65,7 @@ public class Grid3 {
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
-        HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
+        HashMap<Integer, ArrayList<GridPosition>> components = getComponents(threshold);
         return util.curveFitting(components, 10, 3);
     }
 
@@ -76,13 +76,16 @@ public class Grid3 {
     private void addNeighborProbability(Point p, int angleIndex){
         GridPosition g = getGridPosition(p);
         ArrayList<GridPosition> neighbors = getNeighbors(g);
-        double[] angleArray = new double[angles];
+        double[] angleArray;
         for(GridPosition n : neighbors){
-            if(gridValues.containsKey(n)){
-                angleArray =  gridValues.get(n);
+            if(!gridValues.containsKey(n)){
+                angleArray = new double[angles];
+                gridValues.put(n,angleArray);
             }
-            angleArray[angleIndex]++;
-            gridValues.put(n, angleArray);
+            else{
+                angleArray = gridValues.get(n);
+            }
+            angleArray[angleIndex] += 0.5;
         }
     }
 
@@ -95,14 +98,14 @@ public class Grid3 {
         }
         double ang = util.getAngle(p1, p2);
         int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
-        addNeighborProbability(p1, angIdx);
-        addNeighborProbability(p2, angIdx);
         int x = (int)((p1.getX()-xMin)/xPixelWidth);
         int y = (int)((p1.getY()-yMin)/yPixelWidth);
         int xStop = (int)((p2.getX()-xMin)/xPixelWidth);
         int yStop = (int)((p2.getY()-yMin)/yPixelWidth);
         int xSteps = Math.abs(xStop-x);
         int ySteps = Math.abs(yStop-y);
+        addNeighborProbability(p1, angIdx);
+        addNeighborProbability(p2, angIdx);
         if(ySteps >= xSteps){
             int step = 0;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
@@ -147,14 +150,14 @@ public class Grid3 {
     }
 
 
-    public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
+    public HashMap<Integer, ArrayList<GridPosition>> getComponents(double threshold){
         HashMap<GridPosition, double[]> dataSet = gridValues;
         int componentId = 1;
         HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
         for(GridPosition g : dataSet.keySet()){
-            double[] angles = dataSet.get(g);
-            for(int i=0; i<8; i++) {
-                if(angles[i] > 5){
+            double[] angleArray = dataSet.get(g);
+            for(int i=0; i<angles; i++) {
+                if(angleArray[i] > threshold){
                     HashSet<GridPosition> visited = new HashSet<GridPosition>();
                     ArrayList<GridPosition> component = new ArrayList<GridPosition>();
                     LinkedList<GridPosition> toVisit = new LinkedList<GridPosition>();
@@ -167,7 +170,7 @@ public class Grid3 {
                         for (GridPosition n : getNeighborsWithProbability(current)) {
                             if (!visited.contains(n)) {
                                 visited.add(n);
-                                if (dataSet.get(n)[i] > 5) {
+                                if (dataSet.get(n)[i] > threshold) {
                                     toVisit.add(n);
                                     component.add(n);
                                     dataSet.get(n)[i] = 0;
@@ -175,7 +178,7 @@ public class Grid3 {
                             }
                         }
                     }
-                    if(component.size() > 2){
+                    if(component.size() > 3){
                         components.put(componentId++, component);
                     }
                 }
