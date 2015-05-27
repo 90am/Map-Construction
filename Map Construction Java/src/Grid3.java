@@ -177,6 +177,7 @@ public class Grid3 {
                 x = (int) ((xVal-xMin)/xPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 addProbability(g, angIdx, getProbability(distance));
+                addNeighborProbability(g, angIdx, 0.2);
                 y++;
                 step++;
             }
@@ -189,6 +190,7 @@ public class Grid3 {
                 y = (int) ((yVal-yMin)/yPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 addProbability(g, angIdx, getProbability(distance));
+                addNeighborProbability(g, angIdx, 0.2);
                 x += Math.signum(xStop-x);
                 step++;
             }
