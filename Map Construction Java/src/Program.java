@@ -44,7 +44,7 @@ public class Program {
         load.addAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
-        save.insertComponents(map.getResult());
+        save.insertShrunkSkeleton(map.getPoints());
 
     }
 }
