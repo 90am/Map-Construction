@@ -70,9 +70,11 @@ public class Grid3 {
     // Expand lines in correct direction method
     // Check whether lines can be connected
     // Connect lines via proper heuristic
+
     // Compute best fit curve by trying different degrees and splitting up the points in different clusters
     // Remove bad lines
     // Add probability for different angles, like it's done with the neighborhood
+    // Probabilities for different path between points far from each other
 
     /*public ArrayList<GridPosition> extendCurve(ArrayList<GridPosition> s1, ArrayList<GridPosition> s2){
         double distance1 = util.getDistancePointToSegment(s1.get(0), s2);
@@ -107,6 +109,14 @@ public class Grid3 {
         GridPosition g = getGridPosition(p);
         ArrayList<GridPosition> neighbors = getNeighbors(g);
         double[] angleArray;
+        if(!gridValues.containsKey(g)){
+            angleArray = new double[angles];
+            gridValues.put(g, angleArray);
+        }
+        else{
+            angleArray = gridValues.get(g);
+        }
+        angleArray[angleIndex]++;
         for(GridPosition n : neighbors){
             if(!gridValues.containsKey(n)){
                 angleArray = new double[angles];
@@ -126,6 +136,7 @@ public class Grid3 {
             p1 = b;
             p2 = a;
         }
+        double distance = util.getDistancePointToPoint(p1, p2);
         double ang = util.getAngle(p1, p2);
         int angIdx = (int)Math.floor((angles * ((ang + Math.PI / (angles * 2)) / (Math.PI)))) % angles;
         int x = (int)((p1.getX()-xMin)/xPixelWidth);
@@ -137,9 +148,9 @@ public class Grid3 {
         addNeighborProbability(p1, angIdx);
         addNeighborProbability(p2, angIdx);
         if(ySteps >= xSteps){
-            int step = 0;
+            int step = 1;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
-            while(y <= yStop){
+            while(y < yStop){
                 double xVal = p1.getX() + (step*xChange);
                 x = (int) ((xVal-xMin)/xPixelWidth);
                 GridPosition g = new GridPosition(x, y);
@@ -157,7 +168,7 @@ public class Grid3 {
             }
         }
         else{
-            int step = 0;
+            int step = 1;
             double yChange = (p2.getY() - p1.getY()) / xSteps;
             while(x != xStop){
                 double yVal = p1.getY() + (step*yChange);
