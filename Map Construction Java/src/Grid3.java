@@ -116,7 +116,10 @@ public class Grid3 {
         else{
             angleArray = gridValues.get(g);
         }
+
         angleArray[angleIndex]++;
+        angleArray[getAngleIndexMinusOne(angleIndex)] += 0.5;
+        angleArray[getAngleIndexPlusOne(angleIndex)] += 0.5;
         for(GridPosition n : neighbors){
             if(!gridValues.containsKey(n)){
                 angleArray = new double[angles];
@@ -126,7 +129,25 @@ public class Grid3 {
                 angleArray = gridValues.get(n);
             }
             angleArray[angleIndex] += 0.5;
+            angleArray[getAngleIndexMinusOne(angleIndex)] += 0.25;
+            angleArray[getAngleIndexPlusOne(angleIndex)] += 0.25;
         }
+    }
+
+    private int getAngleIndexMinusOne(int angleIndex){
+        int result = angleIndex--;
+        if(result < 0){
+            result = angles-1;
+        }
+        return result;
+    }
+
+    private int getAngleIndexPlusOne(int angleIndex){
+        int result = angleIndex++;
+        if(result > angles-1){
+            result = 0;
+        }
+        return result;
     }
 
     public void addSegment(Point a, Point b){
@@ -162,7 +183,9 @@ public class Grid3 {
                 else{
                     angl = gridValues.get(g);
                 }
-                angl[angIdx] += 1/distance;
+                angl[angIdx] += 20/distance;
+                angl[getAngleIndexMinusOne(angIdx)] += 10/distance;
+                angl[getAngleIndexPlusOne(angIdx)] += 10/distance;
                 y++;
                 step++;
             }
@@ -182,7 +205,9 @@ public class Grid3 {
                 else{
                     angl = gridValues.get(g);
                 }
-                angl[angIdx] += 1/distance;;
+                angl[angIdx] += 20/distance;
+                angl[getAngleIndexMinusOne(angIdx)] += 10/distance;
+                angl[getAngleIndexPlusOne(angIdx)] += 10/distance;
                 x += Math.signum(xStop-x);
                 step++;
             }
