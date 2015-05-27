@@ -119,31 +119,15 @@ public class Util {
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> weightedCurveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
+        int curveId = 1;
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {
-                double minX = Double.MAX_VALUE;
-                double maxX = 0;
-                double minY = Double.MAX_VALUE;
-                double maxY = 0;
-                for(GridPosition g : data.get(key).keySet()){
-                    if(g.getX() < minX)
-                        minX = g.getX();
-                    if(g.getX() > maxX)
-                        maxX = g.getX();
-                    if(g.getY() < minY)
-                        minY = g.getY();
-                    if(g.getY() > maxY)
-                        maxY = g.getY();
-                }
-                double yDiff = Math.abs(maxY-minY);
-                double xDiff = Math.abs(maxX-minX);
-                int numberOfClusters = (int) Math.floor(Math.max(xDiff, yDiff) / 50);
-                ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), numberOfClusters);
+                ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), 2);
                 for(ArrayList<GridPosition> l : clusters) {
                     WeightedObservedPoints obs = new WeightedObservedPoints();
-                    minX = Double.MAX_VALUE;
-                    maxX = 0;
+                    double minX = Double.MAX_VALUE;
+                    double maxX = 0;
                     for (GridPosition g : l) {
                         if (g.getX() < minX)
                             minX = g.getX();
@@ -154,7 +138,7 @@ public class Util {
                     PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                     double[] coeff = fitter.fit(obs.toList());
                     PolynomialFunction poly = new PolynomialFunction(coeff);
-                    minY = poly.value(minX);
+                    double minY = poly.value(minX);
                     ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                     temp.add(new GridPosition(minX, minY));
                     double tempX = minX;
@@ -164,9 +148,9 @@ public class Util {
                         tempY = poly.value(tempX);
                         temp.add(new GridPosition(tempX, tempY));
                     }
-                    maxY = poly.value(maxX);
+                    double maxY = poly.value(maxX);
                     temp.add(new GridPosition(maxX, maxY));
-                    result.put(key, temp);
+                    result.put(curveId++, temp);
                 }
             }
         }
