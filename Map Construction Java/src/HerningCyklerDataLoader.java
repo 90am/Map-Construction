@@ -54,8 +54,8 @@ public class HerningCyklerDataLoader {
             conn = DriverManager.getConnection(herningCyklerDEBUG_db_url, herningCykler_user, herningCykler_password);
             // Execute query
             stmt = conn.createStatement();
-            String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
-            //String sql ="SELECT PointId, X, Y, Lat, Lon, Prob FROM pointProb";
+            //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
+            String sql ="SELECT PointId, X, Y, Lat, Lon, Prob FROM pointProb";
             ResultSet rs = stmt.executeQuery(sql);
             // Extract data from result set
             while(rs.next()){
@@ -103,8 +103,8 @@ public class HerningCyklerDataLoader {
             conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
             // Execute query
             stmt = conn.createStatement();
-            //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
-            String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId, Accuracy FROM Punkt ORDER BY PunktId";
+            String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId, Accuracy FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
+            //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId, Accuracy FROM Punkt ORDER BY PunktId";
             ResultSet rs = stmt.executeQuery(sql);
             // Extract data from result set
             ArrayList<Point> tempList = new ArrayList<Point>();
@@ -119,7 +119,7 @@ public class HerningCyklerDataLoader {
                 int ruteId = rs.getInt("RuteID");
                 double accuracy = rs.getDouble("Accuracy");
                 Point p = new Point(lat, lon, x, y, time, pointId, ruteId, accuracy);
-                if(p.getLat() > min.getLatitude() && p.getLat() < max.getLatitude() && p.getLon() > min.getLongitude() && p.getLon() < max.getLongitude()) {
+                // if(p.getLat() > min.getLatitude() && p.getLat() < max.getLatitude() && p.getLon() > min.getLongitude() && p.getLon() < max.getLongitude()) {
                     if (currentRuteId == ruteId) {
                         tempList.add(p);
                     } else {
@@ -130,7 +130,7 @@ public class HerningCyklerDataLoader {
                         currentRuteId = ruteId;
                         tempList.add(p);
                     }
-                }
+                // }
             }
             allTrips.put(currentRuteId, tempList);
             // Clean-up environment

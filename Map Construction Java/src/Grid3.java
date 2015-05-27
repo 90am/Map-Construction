@@ -45,7 +45,7 @@ public class Grid3 {
 
     public HashMap<Point, Double> getPoints(){
         HashMap<Point, Double> result = new HashMap<Point, Double>();
-        int pointId = 0;
+        int pointId = 1;
         for(GridPosition g : gridValues.keySet()){
             UTMPoint current = new UTMPoint((g.getY()*yPixelWidth)+yMin, (g.getX()*xPixelWidth)+xMin, 32, 'N');
             LatLonPoint l = current.toLatLonPoint();
@@ -58,7 +58,7 @@ public class Grid3 {
     public double getMaxAngle(GridPosition g){
         double[] angleArrray = gridValues.get(g);
         double value = 0;
-        for(int i=0; i<angles-1; i++){
+        for(int i=0; i<angles; i++){
             if(angleArrray[i] > value){
                 value = angleArrray[i];
             }
@@ -148,7 +148,7 @@ public class Grid3 {
         addNeighborProbability(p1, angIdx);
         addNeighborProbability(p2, angIdx);
         if(ySteps >= xSteps){
-            int step = 0;
+            int step = 1;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
             while(y < yStop){
                 double xVal = p1.getX() + (step*xChange);
@@ -162,13 +162,13 @@ public class Grid3 {
                 else{
                     angl = gridValues.get(g);
                 }
-                angl[angIdx]++;
+                angl[angIdx] += 1/distance;
                 y++;
                 step++;
             }
         }
         else{
-            int step = 0;
+            int step = 1;
             double yChange = (p2.getY() - p1.getY()) / xSteps;
             while(x != xStop){
                 double yVal = p1.getY() + (step*yChange);
@@ -182,7 +182,7 @@ public class Grid3 {
                 else{
                     angl = gridValues.get(g);
                 }
-                angl[angIdx]++;
+                angl[angIdx] += 1/distance;;
                 x += Math.signum(xStop-x);
                 step++;
             }
