@@ -65,16 +65,25 @@ public class Util {
 
     public ArrayList<ArrayList<GridPosition>> getClusters(Set<GridPosition> data, int NumberOfClusters){
         ArrayList<ArrayList<GridPosition>> result = new ArrayList<ArrayList<GridPosition>>();
-        List<PositionWrapper> clusterInput = new ArrayList<PositionWrapper>();
-        for(GridPosition g : data){
-            clusterInput.add(new PositionWrapper(g));
+        if(getLargestDistance(data) > 50) {
+            List<PositionWrapper> clusterInput = new ArrayList<PositionWrapper>();
+            for (GridPosition g : data) {
+                clusterInput.add(new PositionWrapper(g));
+            }
+            KMeansPlusPlusClusterer<PositionWrapper> clusterer = new KMeansPlusPlusClusterer<PositionWrapper>(NumberOfClusters, 10000);
+            List<CentroidCluster<PositionWrapper>> clusterResults = clusterer.cluster(clusterInput);
+            for (int i = 0; i < clusterResults.size(); i++) {
+                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                for (PositionWrapper p : clusterResults.get(i).getPoints()) {
+                    temp.add(p.getGridPosition());
+                }
+                result.add(temp);
+            }
         }
-        KMeansPlusPlusClusterer<PositionWrapper> clusterer = new KMeansPlusPlusClusterer<PositionWrapper>(NumberOfClusters, 10000);
-        List<CentroidCluster<PositionWrapper>> clusterResults = clusterer.cluster(clusterInput);
-        for(int i=0; i<clusterResults.size(); i++){
+        else{
             ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
-            for(PositionWrapper p : clusterResults.get(i).getPoints()){
-                temp.add(p.getGridPosition());
+            for (GridPosition g : data) {
+                temp.add(g);
             }
             result.add(temp);
         }
@@ -123,7 +132,9 @@ public class Util {
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {
-                ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), 2);
+                ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), 3);
+                double prevX = -1;
+                double prevY = -1;
                 for(ArrayList<GridPosition> l : clusters) {
                     WeightedObservedPoints obs = new WeightedObservedPoints();
                     double minX = Double.MAX_VALUE;
@@ -134,6 +145,12 @@ public class Util {
                         if (g.getX() > maxX)
                             maxX = g.getX();
                         obs.add(data.get(key).get(g), g.getX(), g.getY());
+                    }
+                    if(Math.abs(minX-prevX) < Math.abs(maxX-prevX) && prevX != -1){
+                        minX = prevX;
+                    }
+                    else{
+                        maxX = prevX;
                     }
                     PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                     double[] coeff = fitter.fit(obs.toList());
@@ -155,6 +172,27 @@ public class Util {
             }
         }
         return result;
+    }
+
+
+    public double getLargestDistance(Set<GridPosition> data){
+        double minX = Double.MAX_VALUE;
+        double maxX = 0;
+        double minY = Double.MAX_VALUE;
+        double maxY = 0;
+        for(GridPosition g : data){
+            if(g.getX() > maxX)
+                maxX = g.getX();
+            if(g.getX() < minX)
+                minX = g.getX();
+            if(g.getY() > maxY)
+                maxY = g.getY();
+            if(g.getY() < minY)
+                minY = g.getY();
+        }
+        double xDiff = Math.abs(maxX-minX);
+        double yDiff = Math.abs(maxY-minY);
+        return Math.max(xDiff, yDiff);
     }
 
     public HashMap<Integer, ArrayList<Point>> formatGridPositions(HashMap<Integer, ArrayList<GridPosition>> data, double xPixelWidth, double yPixelWidth, double xMin, double yMin){
