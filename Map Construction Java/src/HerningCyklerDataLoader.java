@@ -32,8 +32,8 @@ public class HerningCyklerDataLoader {
 
     public HerningCyklerDataLoader(){
         allTrips = new HashMap<Integer, ArrayList<Point>>();
-        min = new LatLonPoint.Double(56.135532, 8.965375);
-        max = new LatLonPoint.Double(56.138324, 8.976705);
+        min = new LatLonPoint.Double(56.1288653,8.9452581);
+        max = new LatLonPoint.Double(56.146625,8.9885811);
     }
 
     public LatLonPoint.Double getMin(){

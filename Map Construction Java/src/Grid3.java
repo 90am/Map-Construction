@@ -110,7 +110,7 @@ public class Grid3 {
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         for(Integer key : curves.keySet()){
             double distance = util.getDistanceOfSegment(curves.get(key));
-            if(distance > 30){
+            if(distance > 45){
                 result.put(key, curves.get(key));
             }
         }
