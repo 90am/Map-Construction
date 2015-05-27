@@ -183,9 +183,9 @@ public class Grid3 {
                 else{
                     angl = gridValues.get(g);
                 }
-                angl[angIdx] += 20/distance;
-                angl[getAngleIndexMinusOne(angIdx)] += 10/distance;
-                angl[getAngleIndexPlusOne(angIdx)] += 10/distance;
+                angl[angIdx] += 1;
+                angl[getAngleIndexMinusOne(angIdx)] += 0.5;
+                angl[getAngleIndexPlusOne(angIdx)] += 0.5;
                 y++;
                 step++;
             }
@@ -205,9 +205,9 @@ public class Grid3 {
                 else{
                     angl = gridValues.get(g);
                 }
-                angl[angIdx] += 20/distance;
-                angl[getAngleIndexMinusOne(angIdx)] += 10/distance;
-                angl[getAngleIndexPlusOne(angIdx)] += 10/distance;
+                angl[angIdx] += 1;
+                angl[getAngleIndexMinusOne(angIdx)] += 0.5;
+                angl[getAngleIndexPlusOne(angIdx)] += 0.5;
                 x += Math.signum(xStop-x);
                 step++;
             }
@@ -297,7 +297,7 @@ public class Grid3 {
         double[] angleArrray = gridValues.get(g);
         int max = 0;
         double value = 0;
-        for(int i=0; i<angles-1; i++){
+        for(int i=0; i<angles; i++){
             if(angleArrray[i] > value){
                 max = i;
                 value = angleArrray[i];

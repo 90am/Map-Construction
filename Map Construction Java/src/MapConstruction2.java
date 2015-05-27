@@ -20,7 +20,7 @@ public class MapConstruction2 {
         this.maxLatLon = maxLatLon;
         filterPoints();
         sanityCheck();
-        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 2);
+        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 10);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
