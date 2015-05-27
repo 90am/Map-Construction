@@ -105,6 +105,18 @@ public class Grid3 {
         return util.formatGridPositions(computeCurves(), xPixelWidth, yPixelWidth, xMin, yMin);
     }
 
+    public HashMap<Integer, ArrayList<Point>> getFinalCurves(){
+        HashMap<Integer, ArrayList<Point>> curves = getFormattedCurves();
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        for(Integer key : curves.keySet()){
+            double distance = util.getDistanceOfSegment(curves.get(key));
+            if(distance > 30){
+                result.put(key, curves.get(key));
+            }
+        }
+        return result;
+    }
+
     private void addNeighborProbability(GridPosition g, int angleIndex, double prob){
         ArrayList<GridPosition> neighbors = getNeighbors(g);
         double[] angleArray;

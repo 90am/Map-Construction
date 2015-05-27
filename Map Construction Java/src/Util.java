@@ -264,6 +264,14 @@ public class Util {
         return Math.sqrt(xd*xd+yd*yd);
     }
 
+    public double getDistanceOfSegment(ArrayList<Point> segment){
+        double result = 0;
+        for(int i=1; i<segment.size(); i++){
+            result += getDistancePointToPoint(segment.get(i-1), segment.get(i));
+        }
+        return result;
+    }
+
     // Calculates the distance from a gps point to a given road segment
     public double getDistancePointToSegment(GridPosition p, ArrayList<GridPosition> segment){
         double result = Double.MAX_VALUE;

@@ -20,7 +20,7 @@ public class MapConstruction2 {
         this.maxLatLon = maxLatLon;
         filterPoints();
         sanityCheck();
-        grid = new Grid3(5, 5, 4, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 9);
+        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 9);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
@@ -30,7 +30,7 @@ public class MapConstruction2 {
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
-        return grid.getFormattedCurves();
+        return grid.getFinalCurves();
     }
 
 
