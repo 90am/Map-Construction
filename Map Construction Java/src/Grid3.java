@@ -1,5 +1,7 @@
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.proj.coords.UTMPoint;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.geometry.euclidean.threed.Line;
 
 import java.util.*;
 
@@ -64,9 +66,37 @@ public class Grid3 {
         return value;
     }
 
+    // TODO
+    // Expand lines in correct direction method
+    // Check whether lines can be connected
+    // Connect lines via proper heuristic
+    // Compute best fit curve by trying different degrees and splitting up the points in different clusters
+    // Remove bad lines
+    // Add probability for different angles, like it's done with the neighborhood
+
+    /*public ArrayList<GridPosition> extendCurve(ArrayList<GridPosition> s1, ArrayList<GridPosition> s2){
+        double distance1 = util.getDistancePointToSegment(s1.get(0), s2);
+        double distance2 = util.getDistancePointToSegment(s1.get(s1.size()-1), s2);
+        if(distance1 < distance2){
+            Line line = new Line(util.getVector(s1.get(0)), util.getVector(s1.get(1)), 0);
+            for (int i = 1; i < s2.size() - 1; i++) {
+                Line temp = new Line(util.getVector(s2.get(i - 1)), util.getVector(s2.get(i)), 0);
+                Vector3D intersection = line.intersection(temp);
+                if (intersection != null) {
+                    return s1;
+                }
+
+            }
+        }
+        else{
+
+        }
+        return null;
+    }*/
+
     public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
-        HashMap<Integer, ArrayList<GridPosition>> components = getComponents(threshold);
-        return util.curveFitting(components, 10, 3);
+        HashMap<Integer, HashMap<GridPosition, Double>> components = getComponents(threshold);
+        return util.weightedCurveFitting(components, 10, 3);
     }
 
     public HashMap<Integer, ArrayList<Point>> getFormattedCurves(){
@@ -150,19 +180,19 @@ public class Grid3 {
     }
 
 
-    public HashMap<Integer, ArrayList<GridPosition>> getComponents(double threshold){
+    public HashMap<Integer, HashMap<GridPosition, Double>> getComponents(double threshold){
         HashMap<GridPosition, double[]> dataSet = gridValues;
         int componentId = 1;
-        HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
+        HashMap<Integer, HashMap<GridPosition, Double>> components = new HashMap<Integer, HashMap<GridPosition, Double>>();
         for(GridPosition g : dataSet.keySet()){
             double[] angleArray = dataSet.get(g);
             for(int i=0; i<angles; i++) {
                 if(angleArray[i] > threshold){
                     HashSet<GridPosition> visited = new HashSet<GridPosition>();
-                    ArrayList<GridPosition> component = new ArrayList<GridPosition>();
+                    HashMap<GridPosition, Double> component = new HashMap<GridPosition, Double>();
                     LinkedList<GridPosition> toVisit = new LinkedList<GridPosition>();
                     visited.add(g);
-                    component.add(g);
+                    component.put(g, dataSet.get(g)[i]);
                     toVisit.add(g);
                     dataSet.get(g)[i] = 0;
                     while(toVisit.size() > 0){
@@ -172,7 +202,7 @@ public class Grid3 {
                                 visited.add(n);
                                 if (dataSet.get(n)[i] > threshold) {
                                     toVisit.add(n);
-                                    component.add(n);
+                                    component.put(n, dataSet.get(n)[i]);
                                     dataSet.get(n)[i] = 0;
                                 }
                             }
