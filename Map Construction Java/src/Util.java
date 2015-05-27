@@ -133,8 +133,8 @@ public class Util {
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {
                 ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), 3);
-                double prevX = -1;
-                double prevY = -1;
+                //double prevX = -1;
+                //double prevY = -1;
                 for(ArrayList<GridPosition> l : clusters) {
                     WeightedObservedPoints obs = new WeightedObservedPoints();
                     double minX = Double.MAX_VALUE;
@@ -146,12 +146,12 @@ public class Util {
                             maxX = g.getX();
                         obs.add(data.get(key).get(g), g.getX(), g.getY());
                     }
-                    if(Math.abs(minX-prevX) < Math.abs(maxX-prevX) && prevX != -1){
+                    /*if(Math.abs(minX-prevX) < Math.abs(maxX-prevX) && prevX != -1){
                         minX = prevX;
                     }
                     else{
                         maxX = prevX;
-                    }
+                    }*/
                     PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                     double[] coeff = fitter.fit(obs.toList());
                     PolynomialFunction poly = new PolynomialFunction(coeff);
