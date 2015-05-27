@@ -4,10 +4,14 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Andreas on 21/05/15.
@@ -59,6 +63,26 @@ public class Util {
         return result;
     }
 
+    public ArrayList<ArrayList<GridPosition>> getClusters(Set<GridPosition> data, int NumberOfClusters){
+        ArrayList<ArrayList<GridPosition>> result = new ArrayList<ArrayList<GridPosition>>();
+        List<PositionWrapper> clusterInput = new ArrayList<PositionWrapper>();
+        for(GridPosition g : data){
+            clusterInput.add(new PositionWrapper(g));
+        }
+        KMeansPlusPlusClusterer<PositionWrapper> clusterer = new KMeansPlusPlusClusterer<PositionWrapper>(NumberOfClusters, 10000);
+        List<CentroidCluster<PositionWrapper>> clusterResults = clusterer.cluster(clusterInput);
+        for(int i=0; i<clusterResults.size(); i++){
+            ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+            for(PositionWrapper p : clusterResults.get(i).getPoints()){
+                temp.add(p.getGridPosition());
+            }
+            result.add(temp);
+        }
+        return result;
+    }
+
+
+
     public HashMap<Integer, ArrayList<GridPosition>> curveFitting(HashMap<Integer, ArrayList<GridPosition>> data, int stepSize, int degree) {
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
@@ -98,32 +122,52 @@ public class Util {
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {
-                WeightedObservedPoints obs = new WeightedObservedPoints();
                 double minX = Double.MAX_VALUE;
                 double maxX = 0;
-                for (GridPosition g : data.get(key).keySet()) {
-                    if (g.getX() < minX)
+                double minY = Double.MAX_VALUE;
+                double maxY = 0;
+                for(GridPosition g : data.get(key).keySet()){
+                    if(g.getX() < minX)
                         minX = g.getX();
-                    if (g.getX() > maxX)
+                    if(g.getX() > maxX)
                         maxX = g.getX();
-                    obs.add(data.get(key).get(g), g.getX(), g.getY());
+                    if(g.getY() < minY)
+                        minY = g.getY();
+                    if(g.getY() > maxY)
+                        maxY = g.getY();
                 }
-                PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
-                double[] coeff = fitter.fit(obs.toList());
-                PolynomialFunction poly = new PolynomialFunction(coeff);
-                double minY = poly.value(minX);
-                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
-                temp.add(new GridPosition(minX, minY));
-                double tempX = minX;
-                double tempY;
-                while(tempX+stepSize < maxX){
-                    tempX += stepSize;
-                    tempY = poly.value(tempX);
-                    temp.add(new GridPosition(tempX, tempY));
+                double yDiff = Math.abs(maxY-minY);
+                double xDiff = Math.abs(maxX-minX);
+                int numberOfClusters = (int) Math.floor(Math.max(xDiff, yDiff) / 50);
+                ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), numberOfClusters);
+                for(ArrayList<GridPosition> l : clusters) {
+                    WeightedObservedPoints obs = new WeightedObservedPoints();
+                    minX = Double.MAX_VALUE;
+                    maxX = 0;
+                    for (GridPosition g : l) {
+                        if (g.getX() < minX)
+                            minX = g.getX();
+                        if (g.getX() > maxX)
+                            maxX = g.getX();
+                        obs.add(data.get(key).get(g), g.getX(), g.getY());
+                    }
+                    PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
+                    double[] coeff = fitter.fit(obs.toList());
+                    PolynomialFunction poly = new PolynomialFunction(coeff);
+                    minY = poly.value(minX);
+                    ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                    temp.add(new GridPosition(minX, minY));
+                    double tempX = minX;
+                    double tempY;
+                    while(tempX + stepSize < maxX) {
+                        tempX += stepSize;
+                        tempY = poly.value(tempX);
+                        temp.add(new GridPosition(tempX, tempY));
+                    }
+                    maxY = poly.value(maxX);
+                    temp.add(new GridPosition(maxX, maxY));
+                    result.put(key, temp);
                 }
-                double maxY = poly.value(maxX);
-                temp.add(new GridPosition(maxX, maxY));
-                result.put(key, temp);
             }
         }
         return result;
