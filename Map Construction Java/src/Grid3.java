@@ -74,7 +74,7 @@ public class Grid3 {
     // Compute best fit curve by trying different degrees and splitting up the points in different clusters
     // Remove bad lines
     // Add probability for different angles, like it's done with the neighborhood
-    // Probabilities for different path between points far from each other
+    // Probabilities for different paths between points far from each other
 
     /*public ArrayList<GridPosition> extendCurve(ArrayList<GridPosition> s1, ArrayList<GridPosition> s2){
         double distance1 = util.getDistancePointToSegment(s1.get(0), s2);
@@ -105,21 +105,9 @@ public class Grid3 {
         return util.formatGridPositions(computeCurves(), xPixelWidth, yPixelWidth, xMin, yMin);
     }
 
-    private void addNeighborProbability(Point p, int angleIndex){
-        GridPosition g = getGridPosition(p);
+    private void addNeighborProbability(GridPosition g, int angleIndex, double prob){
         ArrayList<GridPosition> neighbors = getNeighbors(g);
         double[] angleArray;
-        if(!gridValues.containsKey(g)){
-            angleArray = new double[angles];
-            gridValues.put(g, angleArray);
-        }
-        else{
-            angleArray = gridValues.get(g);
-        }
-
-        angleArray[angleIndex]++;
-        angleArray[getAngleIndexMinusOne(angleIndex)] += 0.5;
-        angleArray[getAngleIndexPlusOne(angleIndex)] += 0.5;
         for(GridPosition n : neighbors){
             if(!gridValues.containsKey(n)){
                 angleArray = new double[angles];
@@ -128,10 +116,21 @@ public class Grid3 {
             else{
                 angleArray = gridValues.get(n);
             }
-            angleArray[angleIndex] += 0.5;
-            angleArray[getAngleIndexMinusOne(angleIndex)] += 0.25;
-            angleArray[getAngleIndexPlusOne(angleIndex)] += 0.25;
+            angleArray[angleIndex] += prob;
         }
+    }
+
+    private void addProbability(GridPosition g, int angleIndex, double prob){
+        double[] angleArray;
+        if(!gridValues.containsKey(g)){
+            angleArray = new double[angles];
+            gridValues.put(g, angleArray);
+        }
+        else{
+            angleArray = gridValues.get(g);
+        }
+        angleArray[angleIndex] += prob;
+
     }
 
     private int getAngleIndexMinusOne(int angleIndex){
@@ -166,8 +165,10 @@ public class Grid3 {
         int yStop = (int)((p2.getY()-yMin)/yPixelWidth);
         int xSteps = Math.abs(xStop-x);
         int ySteps = Math.abs(yStop-y);
-        addNeighborProbability(p1, angIdx);
-        addNeighborProbability(p2, angIdx);
+        addProbability(getGridPosition(p1), angIdx, 1);
+        addProbability(getGridPosition(p2), angIdx, 1);
+        addNeighborProbability(getGridPosition(p1), angIdx, 0.5);
+        addNeighborProbability(getGridPosition(p2), angIdx, 0.5);
         if(ySteps >= xSteps){
             int step = 1;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
@@ -175,17 +176,7 @@ public class Grid3 {
                 double xVal = p1.getX() + (step*xChange);
                 x = (int) ((xVal-xMin)/xPixelWidth);
                 GridPosition g = new GridPosition(x, y);
-                double[] angl;
-                if(!gridValues.containsKey(g)){
-                    angl = new double[angles];
-                    gridValues.put(g,angl);
-                }
-                else{
-                    angl = gridValues.get(g);
-                }
-                angl[angIdx] += 1;
-                angl[getAngleIndexMinusOne(angIdx)] += 0.5;
-                angl[getAngleIndexPlusOne(angIdx)] += 0.5;
+               addProbability(g, angIdx, 1);
                 y++;
                 step++;
             }
@@ -197,17 +188,7 @@ public class Grid3 {
                 double yVal = p1.getY() + (step*yChange);
                 y = (int) ((yVal-yMin)/yPixelWidth);
                 GridPosition g = new GridPosition(x, y);
-                double[] angl;
-                if(!gridValues.containsKey(g)){
-                    angl = new double[angles];
-                    gridValues.put(g,angl);
-                }
-                else{
-                    angl = gridValues.get(g);
-                }
-                angl[angIdx] += 1;
-                angl[getAngleIndexMinusOne(angIdx)] += 0.5;
-                angl[getAngleIndexPlusOne(angIdx)] += 0.5;
+                addProbability(g, angIdx, 1);
                 x += Math.signum(xStop-x);
                 step++;
             }
