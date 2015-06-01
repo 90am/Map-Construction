@@ -33,7 +33,6 @@ public class MapConstruction2 {
         return grid.getResult();
     }
 
-
     public HashMap<Point, Double> getPoints(){
         return grid.getPoints();
     }

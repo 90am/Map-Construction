@@ -46,7 +46,7 @@ public class Program {
         MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
         HashMap<Integer, ArrayList<Point>> result = map.getResult();
         Evaluation eval = new Evaluation(load.loadGroundTruth(), result);
-        save.insertComponents(result);
+        save.insertSegments(result);
 
         /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();

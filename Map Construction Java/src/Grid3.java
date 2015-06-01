@@ -107,12 +107,12 @@ public class Grid3 {
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
-        HashMap<Integer, ArrayList<Point>> curves = util.formatGridPositions(computeCurves(), xPixelWidth, yPixelWidth, xMin, yMin);
+        HashMap<Integer, ArrayList<Point>> curves = getFinalCurves();
         for(Integer key : curves.keySet()){
             for(Integer key2 : curves.keySet()){
                 if(key != key2){
                     double distance = util.compareSegments(curves.get(key), curves.get(key2));
-                    if(distance < 20){
+                    if(distance < 50){
                         double distance1 = util.getDistanceOfSegment(curves.get(key));
                         double distance2 = util.getDistanceOfSegment(curves.get(key2));
                         if(distance1 > distance2){
