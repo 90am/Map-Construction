@@ -97,6 +97,44 @@ public class HerningCyklerDataSaver {
         }
     }
 
+    public void insertSegments(HashMap<Integer, ArrayList<Point>> points) {
+        Connection conn = null;
+        Statement stmt = null;
+        for (Integer key : points.keySet()) {
+            for (Point p : points.get(key)) {
+                /*UTMPoint UTMTemp = new UTMPoint(p.getY(), p.getX(), 32, 'N');
+                LatLonPoint LatLonTemp = UTMTemp.toLatLonPoint();*/
+                try {
+                    // Register jdbc driver and open connection
+                    Class.forName(jdbc_driver);
+                    conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
+                    // Execute update
+                    stmt = conn.createStatement();
+                    String sql = " INSERT INTO segments (PointId, SegmentId, X, Y, Lat, Lon) VALUES ("+p.getPointId()+", "+p.getRuteId()+
+                            ", "+p.getX()+", "+p.getY()+", "+p.getLat()+", "+p.getLon()+")";
+                    stmt.executeUpdate(sql);
+                    stmt.close();
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (stmt != null)
+                            stmt.close();
+                    } catch (SQLException se) {
+                        se.printStackTrace();
+                    }
+                    try {
+                        if (conn != null)
+                            conn.close();
+                    } catch (SQLException se) {
+                        se.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     public void insertPointProb(HashMap<Point, Double> points ) {
         Connection conn = null;
         Statement stmt = null;

@@ -32,8 +32,8 @@ public class HerningCyklerDataLoader {
 
     public HerningCyklerDataLoader(){
         allTrips = new HashMap<Integer, ArrayList<Point>>();
-        min = new LatLonPoint.Double(56.1288653,8.9452581);
-        max = new LatLonPoint.Double(56.146625,8.9885811);
+        min = new LatLonPoint.Double(56.135532, 8.965375);
+        max = new LatLonPoint.Double(56.138324, 8.976705);
     }
 
     public LatLonPoint.Double getMin(){
@@ -67,6 +67,78 @@ public class HerningCyklerDataLoader {
                 double prob = rs.getDouble("Prob");
                 Point p = new Point(lat, lon, x, y, "", pointId, 0, 0);
                 result.put(p, prob);
+            }
+            // Clean-up environment
+            rs.close();
+            stmt.close();
+            conn.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            try{
+                if(stmt!=null)
+                    stmt.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+            try{
+                if(conn!=null)
+                    conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public HashMap<Integer, ArrayList<Point>> loadGroundTruth(){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        Connection conn = null;
+        Statement stmt = null;
+        int numberOfSegments = 0;
+        int pointId = 1;
+        try{
+            // Register jdbc driver and open connection
+            Class.forName(jdbc_driver);
+            conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
+            // Execute query
+            stmt = conn.createStatement();
+            String sql = "SELECT VejstykkeId, X, Y, Lat, Lon FROM vwKnudeJoinedVejstykke WHERE " +
+                    "Vejklasse not like 'Trafik%' AND " +
+                    "Vejklasse not like 'Non-cykl%' " +
+                    "ORDER BY VejstykkeId, NrLangsVejstykke";
+            ResultSet rs = stmt.executeQuery(sql);
+            // Extract data from result set
+            ArrayList<Point> tempList = new ArrayList<Point>();
+            int currentSegmentId = 0;
+            while(rs.next()){
+                int roadSegmentId = rs.getInt("VejstykkeId");
+                double lat = rs.getDouble("Lat");
+                double lon = rs.getDouble("Lon");
+                double x = rs.getDouble("X");
+                double y = rs.getDouble("Y");
+                //Road segment already created and new node found
+                Point p = new Point(lat, lon, x, y, "", pointId++, roadSegmentId, 0);
+                if(p.getLat() > min.getLatitude() && p.getLat() < max.getLatitude() && p.getLon() > min.getLongitude() && p.getLon() < max.getLongitude()) {
+                    if(roadSegmentId == currentSegmentId){
+                        tempList.add(p);
+                    }
+                    //New road segment
+                    else{
+                        if(currentSegmentId != 0) {
+                            result.put(currentSegmentId, tempList);
+                        }
+                        currentSegmentId = roadSegmentId;
+                        tempList = new ArrayList<Point>();
+                        tempList.add(p);
+                        numberOfSegments++;
+                    }
+                }
+            }
+            if(tempList.size() > 0){
+                result.put(currentSegmentId, tempList);
             }
             // Clean-up environment
             rs.close();

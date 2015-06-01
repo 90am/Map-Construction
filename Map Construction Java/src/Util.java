@@ -309,6 +309,34 @@ public class Util {
         return result;
     }
 
+    public double getDistancePointToSegment(Point testP, Point p1, Point p2){
+        double result = Double.MAX_VALUE;
+        // Calculate distance, if less than result update
+        double vx = p2.getX() - p1.getX();
+        double vy = p2.getY() - p1.getY();
+        double wx = testP.getX() - p1.getX();
+        double wy = testP.getY() - p1.getY();
+        double c1 = vx * wx + vy * wy;
+        double c2 = vx * vx + vy * vy;
+        // p is before line
+        if(c1 <= 0){
+            result = getDistancePointToPoint(testP, p1);
+        }
+        // p is after line
+        else if(c2 <= c1){
+           result = getDistancePointToPoint(testP, p2);
+        }
+        // p is in between endpoints of line
+        else{
+            double b = c1/c2;
+            double x = p1.getX()+ vx * b;
+            double y = p1.getY()+ vy * b;
+            Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0);
+            result = getDistancePointToPoint(testP, tempPoint);
+        }
+        return result;
+    }
+
     public Vector3D getVector(GridPosition s){
         return new Vector3D(s.getX(), s.getY(), 0);
     }
