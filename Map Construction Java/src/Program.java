@@ -39,15 +39,15 @@ public class Program {
         save.insertComponents(test.getResult()); */
 
 
-        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         load.addAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
-        save.insertComponents(map.getResult());*/
+        save.insertComponents(map.getResult());
 
-        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        save.insertSegments(load.loadGroundTruth());
+        save.insertSegments(load.loadGroundTruth());*/
     }
 }

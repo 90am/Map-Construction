@@ -30,7 +30,7 @@ public class MapConstruction2 {
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
-        return grid.getFinalCurves();
+        return grid.getResult();
     }
 
 

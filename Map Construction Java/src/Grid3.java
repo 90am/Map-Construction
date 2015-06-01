@@ -105,6 +105,29 @@ public class Grid3 {
         return util.formatGridPositions(computeCurves(), xPixelWidth, yPixelWidth, xMin, yMin);
     }
 
+    public HashMap<Integer, ArrayList<Point>> getResult(){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        HashMap<Integer, ArrayList<Point>> curves = util.formatGridPositions(computeCurves(), xPixelWidth, yPixelWidth, xMin, yMin);
+        for(Integer key : curves.keySet()){
+            for(Integer key2 : curves.keySet()){
+                if(key != key2){
+                    double distance = util.compareSegments(curves.get(key), curves.get(key2));
+                    if(distance < 20){
+                        double distance1 = util.getDistanceOfSegment(curves.get(key));
+                        double distance2 = util.getDistanceOfSegment(curves.get(key2));
+                        if(distance1 > distance2){
+                            result.put(key, curves.get(key));
+                        }
+                    }
+                    else{
+                        result.put(key, curves.get(key));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     public HashMap<Integer, ArrayList<Point>> getFinalCurves(){
         HashMap<Integer, ArrayList<Point>> curves = getFormattedCurves();
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();

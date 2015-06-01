@@ -309,6 +309,42 @@ public class Util {
         return result;
     }
 
+    public double getDistancePointToSegment(Point p, ArrayList<Point> segment){
+        double result = Double.MAX_VALUE;
+        for(int i=1; i<segment.size()-1; i++){
+            Point one = segment.get(i-1);
+            Point two = segment.get(i);
+            double temp = Double.MAX_VALUE;
+            // Calculate distance, if less than result update
+            double vx = two.getX() - one.getX();
+            double vy = two.getY() - one.getY();
+            double wx = p.getX() - one.getX();
+            double wy = p.getY() - one.getY();
+            double c1 = vx * wx + vy * wy;
+            double c2 = vx * vx + vy * vy;
+            // p is before line
+            if(c1 <= 0){
+                temp = getDistancePointToPoint(p, one);
+            }
+            // p is after line
+            else if(c2 <= c1){
+                temp = getDistancePointToPoint(p, two);
+            }
+            // p is in between endpoints of line
+            else{
+                double b = c1/c2;
+                double x = one.getX()+ vx * b;
+                double y = one.getY()+ vy * b;
+                Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0);
+                temp = getDistancePointToPoint(p, tempPoint);
+            }
+            if(temp < result){
+                result = temp;
+            }
+        }
+        return result;
+    }
+
     public double getDistancePointToSegment(Point testP, Point p1, Point p2){
         double result = Double.MAX_VALUE;
         // Calculate distance, if less than result update
@@ -333,6 +369,15 @@ public class Util {
             double y = p1.getY()+ vy * b;
             Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0);
             result = getDistancePointToPoint(testP, tempPoint);
+        }
+        return result;
+    }
+
+    public double compareSegments(ArrayList<Point> s1, ArrayList<Point> s2){
+        double result = 0;
+        for(Point p : s1){
+            double distance = getDistancePointToSegment(p, s2);
+            result += distance;
         }
         return result;
     }
