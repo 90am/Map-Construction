@@ -58,10 +58,10 @@ public class Evaluation {
                             Point testPoint1 = testSegment.get(h-1);
                             Point testPoint2 = testSegment.get(h);
                             double testAngle = Math.toDegrees(util.getAngle(testPoint1, testPoint2));
-                            if(compareAngles(angle, testAngle, 30)){
+                            if(compareAngles(angle, testAngle, 40)){
                                 double distance1 = util.getDistancePointToSegment(temp1, testPoint1, testPoint2);
                                 double distance2 = util.getDistancePointToSegment(temp2, testPoint1, testPoint2);
-                                if(distance1 < 10 && distance2 < 10){
+                                if(distance1 < 15 && distance2 < 15){
                                     commonLength += util.getDistancePointToPoint(temp1, temp2);
                                     foundMatch = true;
                                     break;
