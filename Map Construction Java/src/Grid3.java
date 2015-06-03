@@ -109,20 +109,28 @@ public class Grid3 {
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         HashMap<Integer, ArrayList<Point>> curves = getFinalCurves();
         for(Integer key : curves.keySet()){
+            boolean foundSimilar = false;
+            boolean needToAdd = true;
             for(Integer key2 : curves.keySet()){
                 if(key != key2){
                     double distance = util.compareSegments(curves.get(key), curves.get(key2));
                     if(distance < 50){
+                        foundSimilar = true;
                         double distance1 = util.getDistanceOfSegment(curves.get(key));
                         double distance2 = util.getDistanceOfSegment(curves.get(key2));
-                        if(distance1 > distance2){
-                            result.put(key, curves.get(key));
+                        if(distance1 < distance2){
+                            needToAdd = false;
                         }
                     }
-                    else{
-                        result.put(key, curves.get(key));
-                    }
                 }
+            }
+            if(foundSimilar){
+                if(needToAdd){
+                    result.put(key, curves.get(key));
+                }
+            }
+            else{
+                result.put(key, curves.get(key));
             }
         }
         return result;
