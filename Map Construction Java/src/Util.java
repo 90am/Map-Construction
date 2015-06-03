@@ -150,7 +150,7 @@ public class Util {
                         PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                         double[] coeff = fitter.fit(obs.toList());
                         PolynomialFunction poly = new PolynomialFunction(coeff);
-                        double diff1 = -1;
+                        /*double diff1 = -1;
                         double diff2 = -1;
                         if(prevLast != null){
                             diff1 = Math.abs(prevLast.getX()-minX);
@@ -159,13 +159,13 @@ public class Util {
                                 minX = prevLast.getX();
                             else
                                 maxX = prevFirst.getX();
-                        }
+                        }*/
                         double minY = poly.value(minX);
-                        if(prevLast != null && diff1 < diff2 && diff1 != -1) {
+                        /*if(prevLast != null && diff1 < diff2 && diff1 != -1) {
                             minY = (minY + prevLast.getY())/2;
                             result.get(curveId-1).remove(result.get(curveId-1).size()-1);
                             result.get(curveId-1).add(new GridPosition(minX, minY));
-                        }
+                        }*/
                         ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                         temp.add(new GridPosition(minX, minY));
                         double tempX = minX;
@@ -176,15 +176,15 @@ public class Util {
                             temp.add(new GridPosition(tempX, tempY));
                         }
                         double maxY = poly.value(maxX);
-                        if(prevFirst != null && diff2 < diff1 && diff2 != -1){
+                        /*if(prevFirst != null && diff2 < diff1 && diff2 != -1){
                             maxY = (maxY + prevFirst.getY())/2;
                             result.get(curveId-1).remove(0);
                             result.get(curveId-1).add(0, new GridPosition(maxX, maxY));
-                        }
+                        }*/
                         temp.add( new GridPosition(maxX, maxY));
                         result.put(curveId++, temp);
-                        prevFirst = result.get(curveId-1).get(0);
-                        prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
+                        //prevFirst = result.get(curveId-1).get(0);
+                        //prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
                     }
                     else{
                         WeightedObservedPoints obs = new WeightedObservedPoints();
@@ -200,7 +200,7 @@ public class Util {
                         PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                         double[] coeff = fitter.fit(obs.toList());
                         PolynomialFunction poly = new PolynomialFunction(coeff);
-                        double diff1 = -1;
+                        /*double diff1 = -1;
                         double diff2 = -1;
                         if(prevLast != null){
                             minY = prevLast.getY();
@@ -210,13 +210,13 @@ public class Util {
                                 minY = prevLast.getY();
                             else
                                 maxY = prevFirst.getY();
-                        }
+                        }*/
                         double minX = poly.value(minY);
-                        if(prevLast != null && diff2 < diff1 && diff2 != -1) {
+                        /*if(prevLast != null && diff2 < diff1 && diff2 != -1) {
                             minX = (minX + prevLast.getX() / 2);
                             result.get(curveId-1).remove(result.get(curveId-1).size()-1);
                             result.get(curveId-1).add(new GridPosition(minX, minY));
-                        }
+                        }*/
                         ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                         temp.add(new GridPosition(minX, minY));
                         double tempY = minY;
@@ -227,15 +227,15 @@ public class Util {
                             temp.add(new GridPosition(tempX, tempY));
                         }
                         double maxX = poly.value(maxY);
-                        if(prevFirst != null && diff2 < diff1 && diff2 != -1){
+                        /*if(prevFirst != null && diff2 < diff1 && diff2 != -1){
                             maxX = (maxX + prevFirst.getX())/2;
                             result.get(curveId-1).remove(0);
                             result.get(curveId-1).add(0, new GridPosition(maxX, maxY));
-                        }
+                        }*/
                         temp.add(new GridPosition(maxX, maxY));
                         result.put(curveId++, temp);
-                        prevFirst = result.get(curveId-1).get(0);
-                        prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
+                        //prevFirst = result.get(curveId-1).get(0);
+                        //prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
                     }
                 }
             }
