@@ -78,6 +78,20 @@ public class Util {
             }
             KMeansPlusPlusClusterer<PositionWrapper> clusterer = new KMeansPlusPlusClusterer<PositionWrapper>(NumberOfClusters, 10000);
             List<CentroidCluster<PositionWrapper>> clusterResults = clusterer.cluster(clusterInput);
+            /*double biggestXDif = 0;
+            double biggestYDif = 0;
+            for (int i = 0; i < clusterResults.size(); i++) {
+                for (int j = 0; j < clusterResults.size(); j++) {
+                    double[] center1 = clusterResults.get(i).getCenter().getPoint();
+                    double[] center2 = clusterResults.get(j).getCenter().getPoint();
+                    double tempX = Math.abs(center1[0]-center2[0]);
+                    double tempY = Math.abs(center1[1]-center2[1]);
+                    if(tempX > biggestXDif)
+                        biggestXDif = tempX;
+                    if(tempY > biggestYDif)
+                        biggestYDif = tempY;
+                }
+            }*/
             for (int i = 0; i < clusterResults.size(); i++) {
                 ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                 for (PositionWrapper p : clusterResults.get(i).getPoints()) {
@@ -98,19 +112,19 @@ public class Util {
 
 
 
-    public HashMap<Integer, ArrayList<GridPosition>> curveFitting(HashMap<Integer, ArrayList<GridPosition>> data, int stepSize, int degree) {
+    public HashMap<Integer, ArrayList<GridPosition>> curveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {
                 WeightedObservedPoints obs = new WeightedObservedPoints();
                 double minX = Double.MAX_VALUE;
                 double maxX = 0;
-                for (GridPosition g : data.get(key)) {
+                for (GridPosition g : data.get(key).keySet()) {
                     if (g.getX() < minX)
                         minX = g.getX();
                     if (g.getX() > maxX)
                         maxX = g.getX();
-                    obs.add(g.getX(), g.getY());
+                    obs.add(data.get(key).get(g), g.getX(), g.getY());
                 }
                 PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                 double[] coeff = fitter.fit(obs.toList());
@@ -133,7 +147,7 @@ public class Util {
         return result;
     }
 
-    public HashMap<Integer, ArrayList<GridPosition>> weightedCurveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
+    public HashMap<Integer, ArrayList<GridPosition>> clusterCurveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
         int curveId = 1;
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
