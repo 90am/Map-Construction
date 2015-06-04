@@ -22,7 +22,13 @@ public class Util {
 
     public Util(){}
 
-    public double getAngle(Point p1, Point p2){
+    public double getAngle(Point one, Point two){
+        Point p1 = one;
+        Point p2 = two;
+        if(p1.getY() > p2.getY()){
+            p1 = two;
+            p2 = one;
+        }
         double dx = p2.getX()-p1.getX();
         double dy = p2.getY()-p1.getY();
         return Math.atan2(dy, dx);
@@ -181,7 +187,7 @@ public class Util {
                             result.get(curveId-1).remove(0);
                             result.get(curveId-1).add(0, new GridPosition(maxX, maxY));
                         }*/
-                        temp.add( new GridPosition(maxX, maxY));
+                        temp.add(new GridPosition(maxX, maxY));
                         result.put(curveId++, temp);
                         //prevFirst = result.get(curveId-1).get(0);
                         //prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
@@ -302,7 +308,7 @@ public class Util {
     public double getDistancePointToPoint(GridPosition p1, GridPosition p2){
         double xd = p2.getX()-p1.getX();
         double yd = p2.getY()-p1.getY();
-        return Math.sqrt(xd*xd+yd*yd);
+        return Math.sqrt(xd * xd + yd * yd);
     }
 
     public double getDistancePointToPoint(Point p1, Point p2){
@@ -322,7 +328,7 @@ public class Util {
     // Calculates the distance from a gps point to a given road segment
     public double getDistancePointToSegment(GridPosition p, ArrayList<GridPosition> segment){
         double result = Double.MAX_VALUE;
-        for(int i=1; i<segment.size()-1; i++){
+        for(int i=1; i<segment.size(); i++){
             GridPosition one = segment.get(i-1);
             GridPosition two = segment.get(i);
             double temp = Double.MAX_VALUE;
@@ -358,7 +364,7 @@ public class Util {
 
     public double getDistancePointToSegment(Point p, ArrayList<Point> segment){
         double result = Double.MAX_VALUE;
-        for(int i=1; i<segment.size()-1; i++){
+        for(int i=1; i<segment.size(); i++){
             Point one = segment.get(i-1);
             Point two = segment.get(i);
             double temp = Double.MAX_VALUE;

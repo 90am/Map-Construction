@@ -46,11 +46,11 @@ public class Evaluation {
             for(int i=1; i<segment.size(); i++){
                 Point p1 = segment.get(i-1);
                 Point p2 = segment.get(i);
-                double angle = Math.toDegrees(util.getAngle(p1, p2));
-                ArrayList<Point> tempList = getSmallerSegments(p1, p2, 1);
+                ArrayList<Point> tempList = getSmallerSegments(p1, p2, 2);
                 for(int j=1; j<tempList.size(); j++){
                     Point temp1 = tempList.get(j-1);
                     Point temp2 = tempList.get(j);
+                    double angle = Math.toDegrees(util.getAngle(temp1, temp2));
                     for(Integer key2 : testData.keySet()){
                         ArrayList<Point> testSegment = testData.get(key2);
                         boolean foundMatch = false;
@@ -58,10 +58,10 @@ public class Evaluation {
                             Point testPoint1 = testSegment.get(h-1);
                             Point testPoint2 = testSegment.get(h);
                             double testAngle = Math.toDegrees(util.getAngle(testPoint1, testPoint2));
-                            if(compareAngles(angle, testAngle, 40)){
+                            if(compareAngles(angle, testAngle, 15)){
                                 double distance1 = util.getDistancePointToSegment(temp1, testPoint1, testPoint2);
                                 double distance2 = util.getDistancePointToSegment(temp2, testPoint1, testPoint2);
-                                if(distance1 < 15 && distance2 < 15){
+                                if(distance1 < 5 && distance2 < 5){
                                     commonLength += util.getDistancePointToPoint(temp1, temp2);
                                     foundMatch = true;
                                     break;
