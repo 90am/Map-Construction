@@ -205,12 +205,11 @@ public class Util {
 
 
     public HashMap<Integer, ArrayList<GridPosition>> connectSegments(HashMap<Integer, ArrayList<GridPosition>> data, int threshold){
-        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
-        for(Integer key : result.keySet()){
-            ArrayList<GridPosition> current = result.get(key);
-            for(Integer key2 : result.keySet()){
+        for(Integer key : data.keySet()){
+            ArrayList<GridPosition> current = data.get(key);
+            for(Integer key2 : data.keySet()){
                 if(key != key2){
-                    ArrayList<GridPosition> temp = result.get(key2);
+                    ArrayList<GridPosition> temp = data.get(key2);
                     double distance1 = getDistancePointToPoint(temp.get(0), current.get(0));
                     if(distance1 < threshold){
                         updatePoints(temp.get(0), current.get(0));
@@ -230,7 +229,7 @@ public class Util {
                 }
             }
         }
-        return result;
+        return data;
     }
 
     public void updatePoints(GridPosition g1, GridPosition g2){
