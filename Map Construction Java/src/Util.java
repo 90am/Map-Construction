@@ -8,10 +8,8 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * Created by Andreas on 21/05/15.
@@ -529,6 +527,12 @@ public class Util {
 
     public Vector3D getVector(GridPosition s){
         return new Vector3D(s.getX(), s.getY(), 0);
+    }
+
+    public void printTimestamp(){
+        Date date1 = new Date();
+        Timestamp timestamp1 = new Timestamp(date1.getTime());
+        System.out.println(timestamp1.toString());
     }
 
 }

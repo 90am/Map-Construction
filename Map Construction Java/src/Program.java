@@ -1,4 +1,6 @@
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /*
@@ -37,16 +39,22 @@ public class Program {
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction test = new MapConstruction(load.getAllTrips());
         save.insertComponents(test.getResult()); */
-
-
+        
+        Util util = new Util();
+        util.printTimestamp();
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         load.addAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
+        System.out.println("Number of trips: " + load.getAllTrips().keySet().size());
+        util.printTimestamp();
         MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
+        util.printTimestamp();
         HashMap<Integer, ArrayList<Point>> result = map.getResult();
+        util.printTimestamp();
         Evaluation eval = new Evaluation(load.loadGroundTruth(), result);
+        util.printTimestamp();
         save.insertSegments(result);
+        util.printTimestamp();
 
         /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
