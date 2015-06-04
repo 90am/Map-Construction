@@ -112,7 +112,7 @@ public class Util {
 
 
 
-    public HashMap<Integer, ArrayList<GridPosition>> curveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
+    public HashMap<Integer, ArrayList<GridPosition>> weightedCurveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {

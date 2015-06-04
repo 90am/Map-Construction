@@ -98,7 +98,7 @@ public class Grid3 {
 
     public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
         HashMap<Integer, HashMap<GridPosition, Double>> components = getComponents(threshold);
-        return util.curveFitting(components, 10, 3);
+        return util.weightedCurveFitting(components, 5, 4);
     }
 
     public HashMap<Integer, ArrayList<Point>> getFormattedCurves(){
