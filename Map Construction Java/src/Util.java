@@ -139,8 +139,6 @@ public class Util {
         for(Integer key : data.keySet()) {
             if(data.get(key).size() > 1) {
                 ArrayList<ArrayList<GridPosition>> clusters = getClusters(data.get(key).keySet(), 3);
-                GridPosition prevLast = null;
-                GridPosition prevFirst = null;
                 for(ArrayList<GridPosition> l : clusters) {
                     if(xLargerThanY(l)) {
                         WeightedObservedPoints obs = new WeightedObservedPoints();
@@ -156,22 +154,7 @@ public class Util {
                         PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                         double[] coeff = fitter.fit(obs.toList());
                         PolynomialFunction poly = new PolynomialFunction(coeff);
-                        /*double diff1 = -1;
-                        double diff2 = -1;
-                        if(prevLast != null){
-                            diff1 = Math.abs(prevLast.getX()-minX);
-                            diff2 = Math.abs(prevFirst.getX()- maxX);
-                            if(diff1 < diff2)
-                                minX = prevLast.getX();
-                            else
-                                maxX = prevFirst.getX();
-                        }*/
                         double minY = poly.value(minX);
-                        /*if(prevLast != null && diff1 < diff2 && diff1 != -1) {
-                            minY = (minY + prevLast.getY())/2;
-                            result.get(curveId-1).remove(result.get(curveId-1).size()-1);
-                            result.get(curveId-1).add(new GridPosition(minX, minY));
-                        }*/
                         ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                         temp.add(new GridPosition(minX, minY));
                         double tempX = minX;
@@ -182,15 +165,8 @@ public class Util {
                             temp.add(new GridPosition(tempX, tempY));
                         }
                         double maxY = poly.value(maxX);
-                        /*if(prevFirst != null && diff2 < diff1 && diff2 != -1){
-                            maxY = (maxY + prevFirst.getY())/2;
-                            result.get(curveId-1).remove(0);
-                            result.get(curveId-1).add(0, new GridPosition(maxX, maxY));
-                        }*/
                         temp.add(new GridPosition(maxX, maxY));
                         result.put(curveId++, temp);
-                        //prevFirst = result.get(curveId-1).get(0);
-                        //prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
                     }
                     else{
                         WeightedObservedPoints obs = new WeightedObservedPoints();
@@ -206,23 +182,7 @@ public class Util {
                         PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                         double[] coeff = fitter.fit(obs.toList());
                         PolynomialFunction poly = new PolynomialFunction(coeff);
-                        /*double diff1 = -1;
-                        double diff2 = -1;
-                        if(prevLast != null){
-                            minY = prevLast.getY();
-                            diff1 = Math.abs(prevLast.getY()-minY);
-                            diff2 = Math.abs(prevFirst.getY() - maxY);
-                            if(diff1 < diff2)
-                                minY = prevLast.getY();
-                            else
-                                maxY = prevFirst.getY();
-                        }*/
                         double minX = poly.value(minY);
-                        /*if(prevLast != null && diff2 < diff1 && diff2 != -1) {
-                            minX = (minX + prevLast.getX() / 2);
-                            result.get(curveId-1).remove(result.get(curveId-1).size()-1);
-                            result.get(curveId-1).add(new GridPosition(minX, minY));
-                        }*/
                         ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
                         temp.add(new GridPosition(minX, minY));
                         double tempY = minY;
@@ -233,15 +193,39 @@ public class Util {
                             temp.add(new GridPosition(tempX, tempY));
                         }
                         double maxX = poly.value(maxY);
-                        /*if(prevFirst != null && diff2 < diff1 && diff2 != -1){
-                            maxX = (maxX + prevFirst.getX())/2;
-                            result.get(curveId-1).remove(0);
-                            result.get(curveId-1).add(0, new GridPosition(maxX, maxY));
-                        }*/
                         temp.add(new GridPosition(maxX, maxY));
                         result.put(curveId++, temp);
-                        //prevFirst = result.get(curveId-1).get(0);
-                        //prevLast = result.get(curveId-1).get(result.get(curveId-1).size()-1);
+                    }
+                }
+            }
+        }
+        result = connectSegments(result, 5);
+        return result;
+    }
+
+
+    public HashMap<Integer, ArrayList<GridPosition>> connectSegments(HashMap<Integer, ArrayList<GridPosition>> data, int threshold){
+        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
+        for(Integer key : result.keySet()){
+            ArrayList<GridPosition> current = result.get(key);
+            for(Integer key2 : result.keySet()){
+                if(key != key2){
+                    ArrayList<GridPosition> temp = result.get(key2);
+                    double distance1 = getDistancePointToPoint(temp.get(0), current.get(0));
+                    if(distance1 < threshold){
+                        updatePoints(temp.get(0), current.get(0));
+                    }
+                    distance1 = getDistancePointToPoint(temp.get(0), current.get(current.size()-1));
+                    if(distance1 < threshold){
+                        updatePoints(temp.get(0), current.get(current.size()-1));
+                    }
+                    distance1 = getDistancePointToPoint(temp.get(temp.size()-1), current.get(current.size()-1));
+                    if(distance1 < threshold){
+                        updatePoints(temp.get(temp.size()-1), current.get(current.size()-1));
+                    }
+                    distance1 = getDistancePointToPoint(temp.get(temp.size()-1), current.get(0));
+                    if(distance1 < threshold){
+                        updatePoints(temp.get(temp.size()-1), current.get(0));
                     }
                 }
             }
@@ -249,12 +233,21 @@ public class Util {
         return result;
     }
 
+    public void updatePoints(GridPosition g1, GridPosition g2){
+        double newX = (g1.getX() + g2.getX())/2;
+        double newY = (g1.getY() + g2.getY())/2;
+        g1.setX(newX);
+        g1.setY(newY);
+        g2.setX(newX);
+        g2.setY(newY);
+    }
+
     public boolean xLargerThanY(ArrayList<GridPosition> data){
         double minX = Double.MAX_VALUE;
         double maxX = 0;
         double minY = Double.MAX_VALUE;
         double maxY = 0;
-        for(GridPosition g : data){
+        for(GridPosition g : data) {
             if(g.getX() > maxX)
                 maxX = g.getX();
             if(g.getX() < minX)
