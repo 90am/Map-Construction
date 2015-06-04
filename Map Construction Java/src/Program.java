@@ -39,7 +39,7 @@ public class Program {
         System.out.println("Number of trips: "+load.getAllTrips().keySet().size());
         MapConstruction test = new MapConstruction(load.getAllTrips());
         save.insertComponents(test.getResult()); */
-        
+
         Util util = new Util();
         util.printTimestamp();
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
@@ -47,12 +47,16 @@ public class Program {
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: " + load.getAllTrips().keySet().size());
         util.printTimestamp();
+        System.out.println("Add trajectory data");
         MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
         util.printTimestamp();
+        System.out.println("Compute curves from grid");
         HashMap<Integer, ArrayList<Point>> result = map.getResult();
         util.printTimestamp();
+        System.out.println("Evaluation");
         Evaluation eval = new Evaluation(load.loadGroundTruth(), result);
         util.printTimestamp();
+        System.out.println("Save segments");
         save.insertSegments(result);
         util.printTimestamp();
 
