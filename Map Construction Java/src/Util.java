@@ -147,6 +147,42 @@ public class Util {
         return result;
     }
 
+
+    public HashMap<Integer, ArrayList<GridPosition>> curveFitting(HashMap<Integer, ArrayList<GridPosition>> data, int stepSize, int degree) {
+        HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
+        for(Integer key : data.keySet()) {
+            if(data.get(key).size() > 1) {
+                WeightedObservedPoints obs = new WeightedObservedPoints();
+                double minX = Double.MAX_VALUE;
+                double maxX = 0;
+                for (GridPosition g : data.get(key)) {
+                    if (g.getX() < minX)
+                        minX = g.getX();
+                    if (g.getX() > maxX)
+                        maxX = g.getX();
+                    obs.add(g.getX(), g.getY());
+                }
+                PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
+                double[] coeff = fitter.fit(obs.toList());
+                PolynomialFunction poly = new PolynomialFunction(coeff);
+                double minY = poly.value(minX);
+                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                temp.add(new GridPosition(minX, minY));
+                double tempX = minX;
+                double tempY;
+                while(tempX+stepSize < maxX){
+                    tempX += stepSize;
+                    tempY = poly.value(tempX);
+                    temp.add(new GridPosition(tempX, tempY));
+                }
+                double maxY = poly.value(maxX);
+                temp.add(new GridPosition(maxX, maxY));
+                result.put(key, temp);
+            }
+        }
+        return result;
+    }
+
     public HashMap<Integer, ArrayList<GridPosition>> clusterCurveFitting(HashMap<Integer,HashMap<GridPosition, Double>> data, int stepSize, int degree) {
         int curveId = 1;
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
