@@ -153,7 +153,7 @@ public class Util {
                             minY = g.getY();
                         if (g.getY() > maxY)
                             maxY = g.getY();
-                        obs.add(data.get(key).get(g), g.getX(), g.getY());
+                        obs.add(data.get(key).get(g), g.getY(), g.getX());
                     }
                     PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
                     double[] coeff = fitter.fit(obs.toList());
