@@ -105,7 +105,7 @@ public class Evaluation {
         double k = Math.sqrt(Math.pow(length,2)/(Math.pow(dx,2)+Math.pow(dy,2)));
         double newX = p1.getX()+dx*k;
         double newY = p1.getY()+dy*k;
-        return new Point(0, 0, newX, newY, "", 0, 0, 0);
+        return new Point(0, 0, newX, newY, "", 0, 0, 0, 0);
     }
 
 }

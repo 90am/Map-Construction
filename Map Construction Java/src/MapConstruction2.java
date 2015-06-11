@@ -9,22 +9,25 @@ import java.util.*;
  */
 public class MapConstruction2 {
 
+    private Util util;
     private HashMap<Integer, ArrayList<Point>> data;
     private Grid3 grid;
     private LatLonPoint.Double minLatLon;
     private LatLonPoint.Double maxLatLon;
 
     public MapConstruction2(HashMap<Integer, ArrayList<Point>> data, LatLonPoint.Double minLatLon, LatLonPoint.Double maxLatLon) {
+        this.util = new Util();
         this.data = data;
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        filterPoints();
-        sanityCheck();
-        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 9);
+        accuracyFilter();
+        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 7);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
-                grid.addSegment(list.get(i-1), list.get(i));
+                if(checkSegment(list.get(i - 1), list.get(i))){
+                    grid.addSegment(list.get(i - 1), list.get(i));
+                }
             }
         }
     }
@@ -37,7 +40,40 @@ public class MapConstruction2 {
         return grid.getPoints();
     }
 
-    private void filterPoints(){
+    public boolean checkSegment(Point p1, Point p2){
+        boolean result = false;
+        double speedThreshold = 12;
+        double angleThreshold = 30;
+        Date d1 = getDateFromString(p1.getTime());
+        Date d2 = getDateFromString(p2.getTime());
+        long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
+        double distance = util.getDistancePointToPoint(p1, p2);
+        double speed = distance/timeSpan;
+        double angle = util.getAngleInDegrees(p1, p2);
+        double angle2 = angle+180;
+        if(angle2 > 360){
+            angle2 = angle2 - 360;
+        }
+        if(speed < speedThreshold) {
+            if (p1.getBearing() != 0 && p2.getBearing() != 0) {
+                double angDif1 = Math.abs(p1.getBearing()-angle);
+                double angDif2 = Math.abs(p1.getBearing()-angle2);
+                if(angDif1 < angleThreshold || angDif2 < angleThreshold){
+                    angDif1 = Math.abs(p2.getBearing()-angle);
+                    angDif2 = Math.abs(p2.getBearing()-angle2);
+                    if(angDif1 < angleThreshold || angDif2 < angleThreshold){
+                        result = true;
+                    }
+                }
+            }
+            else{
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private void accuracyFilter(){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         for(Integer key : data.keySet()){
             ArrayList<Point> temp = new ArrayList<Point>();
@@ -51,7 +87,7 @@ public class MapConstruction2 {
         data = result;
     }
 
-    private void sanityCheck(){
+    private void speedFilter(){
         int ruteId = 0;
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         for(Integer key : data.keySet()){

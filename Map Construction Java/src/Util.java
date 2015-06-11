@@ -32,6 +32,11 @@ public class Util {
         return Math.atan2(dy, dx);
     }
 
+    public double getAngleInDegrees(Point one, Point two){
+        double rad = getAngle(one, two);
+        return rad*(180/Math.PI);
+    }
+
     public int getAngleIndex(Point p1, Point p2, int angles){
         double angle;
         if(p1.getY() < p2.getY())
@@ -387,7 +392,7 @@ public class Util {
             for(GridPosition g : data.get(key)) {
                 UTMPoint current = new UTMPoint((g.getY() * yPixelWidth) + yMin, (g.getX() * xPixelWidth) + xMin, 32, 'N');
                 LatLonPoint l = current.toLatLonPoint();
-                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key, 0);
+                Point p = new Point(l.getLatitude(), l.getLongitude(), current.easting, current.northing, "", pointId++, key, 0, 0);
                 temp.add(p);
             }
             result.put(key, temp);
@@ -478,7 +483,7 @@ public class Util {
                 double b = c1/c2;
                 double x = one.getX()+ vx * b;
                 double y = one.getY()+ vy * b;
-                Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0);
+                Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0, 0);
                 temp = getDistancePointToPoint(p, tempPoint);
             }
             if(temp < result){
@@ -510,7 +515,7 @@ public class Util {
             double b = c1/c2;
             double x = p1.getX()+ vx * b;
             double y = p1.getY()+ vy * b;
-            Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0);
+            Point tempPoint = new Point(0, 0, x, y, "", 0, 0, 0, 0);
             result = getDistancePointToPoint(testP, tempPoint);
         }
         return result;

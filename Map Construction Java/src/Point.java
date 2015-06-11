@@ -14,9 +14,10 @@ public class Point {
     private int ruteId;
     private double newX;
     private double newY;
+    private double bearing;
     private double accuracy;
 
-    public Point(double lat, double lon, double x, double y, String time, int pointId, int ruteId, double accuracy){
+    public Point(double lat, double lon, double x, double y, String time, int pointId, int ruteId, double bearing, double accuracy){
         this.lat = lat;
         this.lon = lon;
         this.x = x;
@@ -26,11 +27,16 @@ public class Point {
         this.ruteId = ruteId;
         this.newX = x;
         this.newY = y;
+        this.bearing = bearing;
         this.accuracy = accuracy;
     }
 
     public void setRuteId(int ruteId){
         this.ruteId = ruteId;
+    }
+
+    public double getBearing(){
+        return bearing;
     }
 
     public double getAccuracy(){
