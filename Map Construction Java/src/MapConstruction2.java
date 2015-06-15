@@ -20,16 +20,15 @@ public class MapConstruction2 {
         this.data = data;
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        accuracyFilter();
         grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 7);
-        for(Integer key : data.keySet()){
+        /*for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
                 if(checkSegment(list.get(i - 1), list.get(i))){
                     grid.addSegment(list.get(i - 1), list.get(i));
                 }
             }
-        }
+        }*/
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
@@ -41,6 +40,7 @@ public class MapConstruction2 {
     }
 
     public HashMap<Integer, ArrayList<Point>> selectSegments(HashMap<Integer, ArrayList<Point>> data){
+        data = accuracyFilter(data);
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         int ruteId = 1;
         for(Integer key : data.keySet()){
@@ -64,8 +64,8 @@ public class MapConstruction2 {
 
     public boolean checkSegment(Point p1, Point p2){
         boolean result = false;
-        double speedThreshold = 15;
-        double angleThreshold = 50;
+        double speedThreshold = 12;
+        double angleThreshold = 30;
         Date d1 = getDateFromString(p1.getTime());
         Date d2 = getDateFromString(p2.getTime());
         long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
@@ -95,7 +95,7 @@ public class MapConstruction2 {
         return result;
     }
 
-    private void accuracyFilter(){
+    private HashMap<Integer, ArrayList<Point>>  accuracyFilter(HashMap<Integer, ArrayList<Point>>  data){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         for(Integer key : data.keySet()){
             ArrayList<Point> temp = new ArrayList<Point>();
@@ -106,7 +106,7 @@ public class MapConstruction2 {
             }
             result.put(key, temp);
         }
-        data = result;
+        return result;
     }
 
     private void speedFilter(){
