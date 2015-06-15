@@ -114,7 +114,7 @@ public class Grid3 {
             for(Integer key2 : curves.keySet()){
                 if(key != key2){
                     double distance = util.compareSegments(curves.get(key), curves.get(key2));
-                    if(distance < 50){
+                    if(distance < 100){
                         foundSimilar = true;
                         double distance1 = util.getDistanceOfSegment(curves.get(key));
                         double distance2 = util.getDistanceOfSegment(curves.get(key2));

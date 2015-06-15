@@ -91,16 +91,14 @@ public class Evaluation {
                 Point p1 = segment.get(i-1);
                 Point p2 = segment.get(i);
                 ArrayList<Point> tempList = getSmallerSegments(p1, p2, 2);
-                for(int j=1; j<tempList.size(); j++) {
-                    Point temp1 = tempList.get(j - 1);
-                    Point temp2 = tempList.get(j);
+                for(int j=0; j<tempList.size(); j++) {
+                    Point temp = tempList.get(j);
                     double minDistance = Double.MAX_VALUE;
                     for (Integer key2 : groundTruth.keySet()) {
                         ArrayList<Point> testSegment = groundTruth.get(key2);
-                        double distance1 = util.getDistancePointToSegment(temp1, testSegment);
-                        double distance2 = util.getDistancePointToSegment(temp2, testSegment);
-                        if(distance1+distance2 < minDistance)
-                            minDistance = distance1+distance2;
+                        double tempDistance = util.getDistancePointToSegment(temp, testSegment);
+                        if(tempDistance < minDistance)
+                            minDistance = tempDistance;
                     }
                     distance += minDistance;
                     counter++;
