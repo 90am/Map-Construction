@@ -210,8 +210,8 @@ public class Grid3 {
         int ySteps = Math.abs(yStop-y);
         addProbability(getGridPosition(p1), angIdx, 1);
         addProbability(getGridPosition(p2), angIdx, 1);
-        //addNeighborProbability(getGridPosition(p1), angIdx, 0.5);
-        //addNeighborProbability(getGridPosition(p2), angIdx, 0.5);
+        addNeighborProbability(getGridPosition(p1), angIdx, 0.5);
+        addNeighborProbability(getGridPosition(p2), angIdx, 0.5);
         if(ySteps >= xSteps){
             int step = 1;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
@@ -220,7 +220,7 @@ public class Grid3 {
                 x = (int) ((xVal-xMin)/xPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 addProbability(g, angIdx, getProbability(distance));
-                //addNeighborProbability(g, angIdx, 0.2);
+                addNeighborProbability(g, angIdx, 0.2);
                 y++;
                 step++;
             }
@@ -233,7 +233,7 @@ public class Grid3 {
                 y = (int) ((yVal-yMin)/yPixelWidth);
                 GridPosition g = new GridPosition(x, y);
                 addProbability(g, angIdx, getProbability(distance));
-                //addNeighborProbability(g, angIdx, 0.2);
+                addNeighborProbability(g, angIdx, 0.2);
                 x += Math.signum(xStop-x);
                 step++;
             }

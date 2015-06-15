@@ -25,9 +25,13 @@ public class Evaluation {
         double recall = commonLength/getDistanceOfMap(groundTruth);
         System.out.println("Recall: "+recall);
         double precision = commonLength/getDistanceOfMap(testData);
+        if(precision > 1.0)
+            precision = 1.0;
         System.out.println("Precision: "+precision);
         double FScore = (2*recall*precision)/(recall+precision);
         System.out.println("F-score: "+FScore);
+        double displacement = computeGeographicDisplacement();
+        System.out.println("Average displacement: "+displacement);
         return FScore;
     }
 
@@ -76,6 +80,34 @@ public class Evaluation {
             }
         }
         return commonLength;
+    }
+
+    public double computeGeographicDisplacement(){
+        double distance = 0;
+        double counter = 0;
+        for(Integer key : testData.keySet()){
+            ArrayList<Point> segment = testData.get(key);
+            for(int i=1; i<segment.size(); i++){
+                Point p1 = segment.get(i-1);
+                Point p2 = segment.get(i);
+                ArrayList<Point> tempList = getSmallerSegments(p1, p2, 2);
+                for(int j=1; j<tempList.size(); j++) {
+                    Point temp1 = tempList.get(j - 1);
+                    Point temp2 = tempList.get(j);
+                    double minDistance = Double.MAX_VALUE;
+                    for (Integer key2 : groundTruth.keySet()) {
+                        ArrayList<Point> testSegment = groundTruth.get(key2);
+                        double distance1 = util.getDistancePointToSegment(temp1, testSegment);
+                        double distance2 = util.getDistancePointToSegment(temp2, testSegment);
+                        if(distance1+distance2 < minDistance)
+                            minDistance = distance1+distance2;
+                    }
+                    distance += minDistance;
+                    counter++;
+                }
+            }
+        }
+        return distance/counter;
     }
 
     public boolean compareAngles(double angle1, double angle2, double threshold){
