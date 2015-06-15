@@ -47,14 +47,14 @@ public class Util {
         return angleIndex;
     }
 
-    public HashMap<Integer, ArrayList<GridPosition>> linearRegression(HashMap<Integer, ArrayList<GridPosition>> data){
+    public HashMap<Integer, ArrayList<GridPosition>> linearRegression (HashMap<Integer, HashMap<GridPosition, Double>> data){
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()){
             if(data.get(key).size() > 1) {
                 SimpleRegression regression = new SimpleRegression();
                 double minX = Double.MAX_VALUE;
                 double maxX = 0;
-                for (GridPosition g : data.get(key)) {
+                for (GridPosition g : data.get(key).keySet()) {
                     if (g.getX() < minX)
                         minX = g.getX();
                     if (g.getX() > maxX)

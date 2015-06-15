@@ -68,7 +68,8 @@ public class Grid {
 
     public HashMap<Integer, ArrayList<GridPosition>> computeLines(){
         HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
-        return util.linearRegression(components);
+        //return util.linearRegression(components);
+        return null;
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> getComponents(){

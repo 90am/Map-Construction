@@ -17,18 +17,16 @@ public class MapConstruction2 {
 
     public MapConstruction2(HashMap<Integer, ArrayList<Point>> data, LatLonPoint.Double minLatLon, LatLonPoint.Double maxLatLon) {
         this.util = new Util();
-        this.data = data;
+        this.data = selectSegments(data);
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 7);
-        /*for(Integer key : data.keySet()){
+        grid = new Grid3(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon), 1);
+        for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
-                if(checkSegment(list.get(i - 1), list.get(i))){
-                    grid.addSegment(list.get(i - 1), list.get(i));
-                }
+                grid.addSegment(list.get(i - 1), list.get(i));
             }
-        }*/
+        }
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
@@ -40,11 +38,11 @@ public class MapConstruction2 {
     }
 
     public HashMap<Integer, ArrayList<Point>> selectSegments(HashMap<Integer, ArrayList<Point>> data){
-        data = accuracyFilter(data);
+        HashMap<Integer, ArrayList<Point>> filteredData = accuracyFilter(data);
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         int ruteId = 1;
-        for(Integer key : data.keySet()){
-            ArrayList<Point> list = data.get(key);
+        for(Integer key : filteredData.keySet()){
+            ArrayList<Point> list = filteredData.get(key);
             ArrayList<Point> temp = new ArrayList<Point>();
             temp.add(list.get(0));
             for(int i=1; i<list.size();i++){
@@ -64,8 +62,8 @@ public class MapConstruction2 {
 
     public boolean checkSegment(Point p1, Point p2){
         boolean result = false;
-        double speedThreshold = 12;
-        double angleThreshold = 30;
+        double speedThreshold = 10;
+        double angleThreshold = 20;
         Date d1 = getDateFromString(p1.getTime());
         Date d2 = getDateFromString(p2.getTime());
         long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
@@ -104,43 +102,10 @@ public class MapConstruction2 {
                     temp.add(p);
                 }
             }
-            result.put(key, temp);
+            if(temp.size() > 0)
+                result.put(key, temp);
         }
         return result;
-    }
-
-    private void speedFilter(){
-        int ruteId = 0;
-        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
-        for(Integer key : data.keySet()){
-            ArrayList<Point> temp = new ArrayList<Point>();
-            for(Point p : data.get(key)){
-                if(temp.size() == 0){
-                    p.setRuteId(ruteId++);
-                    temp.add(p);
-                }
-                else{
-                    Point prevP = temp.get(temp.size()-1);
-                    Date d1 = getDateFromString(prevP.getTime());
-                    Date d2 = getDateFromString(p.getTime());
-                    long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
-                    if(timeSpan < 30){
-                        p.setRuteId(prevP.getRuteId());
-                        temp.add(p);
-                    }
-                    else{
-                        result.put(prevP.getRuteId(), temp);
-                        temp = new ArrayList<Point>();
-                        p.setRuteId(ruteId++);
-                        temp.add(p);
-                    }
-                }
-            }
-            if(temp.size() > 0)
-                result.put(temp.get(0).getRuteId(), temp);
-
-        }
-        data = result;
     }
 
     private Date getDateFromString(String s){

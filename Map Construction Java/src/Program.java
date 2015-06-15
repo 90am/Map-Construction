@@ -40,29 +40,30 @@ public class Program {
         MapConstruction test = new MapConstruction(load.getAllTrips());
         save.insertComponents(test.getResult()); */
 
-        /*Util util = new Util();
+        Util util = new Util();
         util.printTimestamp();
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        HashMap<Integer, ArrayList<Point>> trips = load.loadAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        System.out.println("Number of trips: " + load.loadAllTrips().keySet().size());
+        System.out.println("Number of trips: " + trips.keySet().size());
         util.printTimestamp();
         System.out.println("Add trajectory data");
-        MapConstruction2 map = new MapConstruction2(load.loadAllTrips(), load.getMin(), load.getMax());
+        MapConstruction2 map = new MapConstruction2(trips, load.getMin(), load.getMax());
         util.printTimestamp();
         System.out.println("Compute curves from grid");
         HashMap<Integer, ArrayList<Point>> result = map.getResult();
         util.printTimestamp();
         System.out.println("Evaluation");
-        Evaluation eval = new Evaluation(load.loadGroundTruth(), result);
+        Evaluation eval = new Evaluation(load.loadMatchedGroundTruth(), result);
         util.printTimestamp();
         System.out.println("Save segments");
         save.insertSegments(result);
-        util.printTimestamp();*/
+        util.printTimestamp();
 
-        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+       /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         HashMap<Integer, ArrayList<Point>> result = load.loadAllTrips();
         MapConstruction2 map = new MapConstruction2(result, load.getMin(), load.getMax());
-        save.insertSegments(map.selectSegments(result));
+        save.insertSegments(map.selectSegments(result));*/
     }
 }
