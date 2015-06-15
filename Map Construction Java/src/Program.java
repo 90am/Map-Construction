@@ -61,6 +61,8 @@ public class Program {
 
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        save.insertSegments(load.loadAllTrips());
+        HashMap<Integer, ArrayList<Point>> result = load.loadAllTrips();
+        MapConstruction2 map = new MapConstruction2(result, load.getMin(), load.getMax());
+        save.insertSegments(map.selectSegments(result));
     }
 }

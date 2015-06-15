@@ -40,10 +40,32 @@ public class MapConstruction2 {
         return grid.getPoints();
     }
 
+    public HashMap<Integer, ArrayList<Point>> selectSegments(HashMap<Integer, ArrayList<Point>> data){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        int ruteId = 1;
+        for(Integer key : data.keySet()){
+            ArrayList<Point> list = data.get(key);
+            ArrayList<Point> temp = new ArrayList<Point>();
+            temp.add(list.get(0));
+            for(int i=1; i<list.size();i++){
+                if(checkSegment(list.get(i - 1), list.get(i))){
+                    temp.add(list.get(i));
+                }
+                else{
+                    result.put(ruteId++, temp);
+                    temp = new ArrayList<Point>();
+                    temp.add(list.get(i));
+                }
+            }
+            result.put(ruteId++, temp);
+        }
+        return result;
+    }
+
     public boolean checkSegment(Point p1, Point p2){
         boolean result = false;
-        double speedThreshold = 12;
-        double angleThreshold = 30;
+        double speedThreshold = 15;
+        double angleThreshold = 50;
         Date d1 = getDateFromString(p1.getTime());
         Date d2 = getDateFromString(p2.getTime());
         long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
