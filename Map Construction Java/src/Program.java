@@ -43,12 +43,11 @@ public class Program {
         /*Util util = new Util();
         util.printTimestamp();
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
-        load.addAllTrips();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        System.out.println("Number of trips: " + load.getAllTrips().keySet().size());
+        System.out.println("Number of trips: " + load.loadAllTrips().keySet().size());
         util.printTimestamp();
         System.out.println("Add trajectory data");
-        MapConstruction2 map = new MapConstruction2(load.getAllTrips(), load.getMin(), load.getMax());
+        MapConstruction2 map = new MapConstruction2(load.loadAllTrips(), load.getMin(), load.getMax());
         util.printTimestamp();
         System.out.println("Compute curves from grid");
         HashMap<Integer, ArrayList<Point>> result = map.getResult();
@@ -62,6 +61,6 @@ public class Program {
 
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        save.insertSegments(load.loadMatchedGroundTruth());
+        save.insertSegments(load.loadAllTrips());
     }
 }

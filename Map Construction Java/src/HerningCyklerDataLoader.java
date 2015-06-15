@@ -14,7 +14,6 @@ public class HerningCyklerDataLoader {
     private String herningCyklerDEBUG_db_url = "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCyklerDEBUG";
     private String herningCykler_user = "HerningUser";
     private String herningCykler_password = "herningpass";
-    private HashMap<Integer, ArrayList<Point>> allTrips;
     private LatLonPoint.Double min;
     private LatLonPoint.Double max;
 
@@ -31,7 +30,6 @@ public class HerningCyklerDataLoader {
     // max 56.146625,8.9885811
 
     public HerningCyklerDataLoader(){
-        allTrips = new HashMap<Integer, ArrayList<Point>>();
         min = new LatLonPoint.Double(56.135532, 8.965375);
         max = new LatLonPoint.Double(56.138324, 8.976705);
     }
@@ -44,7 +42,7 @@ public class HerningCyklerDataLoader {
         return max;
     }
 
-    public HashMap<Point, Double> getPoints(){
+    public HashMap<Point, Double> loadPoints(){
         HashMap<Point, Double> result = new HashMap<Point, Double>();
         Connection conn = null;
         Statement stmt = null;
@@ -239,7 +237,8 @@ public class HerningCyklerDataLoader {
         return result;
     }
 
-        public void addAllTrips(){
+    public HashMap<Integer, ArrayList<Point>> loadAllTrips(){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         System.out.println("Loading all trips");
         Connection conn = null;
         Statement stmt = null;
@@ -271,7 +270,7 @@ public class HerningCyklerDataLoader {
                         tempList.add(p);
                     } else {
                         if(currentRuteId != 0){
-                            allTrips.put(currentRuteId, tempList);
+                            result.put(currentRuteId, tempList);
                             tempList = new ArrayList<Point>();
                         }
                         currentRuteId = ruteId;
@@ -279,7 +278,7 @@ public class HerningCyklerDataLoader {
                     }
                 }
             }
-            allTrips.put(currentRuteId, tempList);
+            result.put(currentRuteId, tempList);
             // Clean-up environment
             rs.close();
             stmt.close();
@@ -302,10 +301,7 @@ public class HerningCyklerDataLoader {
                 se.printStackTrace();
             }
         }
-    }
-
-    public HashMap<Integer, ArrayList<Point>> getAllTrips(){
-        return allTrips;
+        return result;
     }
 }
 
