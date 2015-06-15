@@ -282,7 +282,7 @@ public class Util {
                 }
             }
         }
-        result = connectSegments(result, 5);
+        //result = connectSegments(result, 5);
         return result;
     }
 

@@ -40,7 +40,7 @@ public class Program {
         MapConstruction test = new MapConstruction(load.getAllTrips());
         save.insertComponents(test.getResult()); */
 
-        Util util = new Util();
+        /*Util util = new Util();
         util.printTimestamp();
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         load.addAllTrips();
@@ -58,10 +58,10 @@ public class Program {
         util.printTimestamp();
         System.out.println("Save segments");
         save.insertSegments(result);
-        util.printTimestamp();
+        util.printTimestamp();*/
 
-        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
+        HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();
-        save.insertSegments(load.loadGroundTruth());*/
+        save.insertSegments(load.loadMatchedGroundTruth());
     }
 }
