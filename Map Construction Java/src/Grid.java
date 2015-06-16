@@ -82,8 +82,10 @@ public class Grid {
                     counter++;
                 }
             }
-            if(gridValues.get(g)[angle] < prob/counter){
-                gridValues.put(g, new double[angles]);
+            if(counter > 0) {
+                if (gridValues.get(g)[angle] < prob / counter) {
+                    gridValues.put(g, new double[angles]);
+                }
             }
         }
     }
