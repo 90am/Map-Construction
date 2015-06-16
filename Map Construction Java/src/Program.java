@@ -48,7 +48,7 @@ public class Program {
         System.out.println("Number of trips: " + trips.keySet().size());
         util.printTimestamp();
         System.out.println("Add trajectory data");
-        MapConstruction2 map = new MapConstruction2(trips, load.getMin(), load.getMax());
+        MapConstruction map = new MapConstruction(trips, load.getMin(), load.getMax());
         util.printTimestamp();
         System.out.println("Compute curves from grid");
         HashMap<Integer, ArrayList<Point>> result = map.getResult();

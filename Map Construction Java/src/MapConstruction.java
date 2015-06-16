@@ -25,16 +25,16 @@ public class MapConstruction {
     private double k;
     private double xPixelWidth;
     private double yPixelWidth;
-    private UTMPoint minUTM;
-    private UTMPoint maxUTM;
+    private LatLonPoint.Double minLatLon;
+    private LatLonPoint.Double maxLatLon;
 
 
-    public MapConstruction(HashMap<Integer, ArrayList<Point>> data, UTMPoint min, UTMPoint max){
+    public MapConstruction(HashMap<Integer, ArrayList<Point>> data, LatLonPoint.Double minLatLon, LatLonPoint.Double maxLatLon){
         util = new Util();
         this.data = selectSegments(data);
-        minUTM = min;
-        maxUTM = max;
-        grid = new Grid(5, 5, 8, minUTM, maxUTM);
+        this.minLatLon = minLatLon;
+        this.maxLatLon = maxLatLon;
+        grid = new Grid(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon));
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
