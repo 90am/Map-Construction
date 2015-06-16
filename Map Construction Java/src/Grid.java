@@ -9,10 +9,13 @@ import java.util.*;
 
 /**
  * Created by Andreas on 07/05/15.
+ *
+ * Class representing the original algorithm
+ *
  */
 public class Grid {
     private Util util;
-    private HashMap<GridPosition, int[]> gridValues;
+    private HashMap<GridPosition, double[]> gridValues;
     private double xPixelWidth;
     private double yPixelWidth;
     private double xMin;
@@ -20,28 +23,21 @@ public class Grid {
     private double yMin;
     private double yMax;
     private int angles;
-    private int componentId;
 
     public Grid(double xPixelWidth, double yPixelWidth, int angles, UTMPoint min, UTMPoint max){
         util = new Util();
-        gridValues = new HashMap<GridPosition, int[]>();
+        gridValues = new HashMap<GridPosition, double[]>();
         this.angles = angles;
         this.xMin = min.easting;
         this.xMax = max.easting;
         this.yMin = min.northing;
         this.yMax = max.northing;
-        /*double xDist = xMax-xMin;
-        double yDist = yMax-yMin;
-        double ration = xDist/yDist;
-        xPixelWidth = (xMax-xMin)/xWidth;
-        yPixelWidth = (yMax-yMin)/(xWidth/ration);*/
         this.xPixelWidth = xPixelWidth;
         this.yPixelWidth = yPixelWidth;
-        componentId = 0;
     }
 
     public Grid(double xPixelWidth, double yPixelWidth, int angles, int xMin, int yMin, int xMax, int yMax){
-        gridValues = new HashMap<GridPosition, int[]>();
+        gridValues = new HashMap<GridPosition, double[]>();
         this.xPixelWidth = xPixelWidth;
         this.yPixelWidth = yPixelWidth;
         this.angles = angles;
@@ -49,7 +45,6 @@ public class Grid {
         this.xMax = xMax;
         this.yMin = yMin;
         this.yMax = yMax;
-        componentId = 0;
     }
 
     public double getXPixelWidth(){
@@ -60,68 +55,85 @@ public class Grid {
         return yPixelWidth;
     }
 
+    public HashMap<Integer, ArrayList<Point>> getResult(){
+        HashMap<Integer, ArrayList<GridPosition>> lines = computeLines();
+        return util.formatGridPositions(lines, xPixelWidth, yPixelWidth, xMin, yMin);
+    }
+
     public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
-        HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
-        return util.curveFitting(components, 20, 3);
+        HashMap<Integer, HashMap<GridPosition, Double>> components = getComponents();
+        return util.weightedCurveFitting(components, 10, 3);
     }
 
 
     public HashMap<Integer, ArrayList<GridPosition>> computeLines(){
-        HashMap<Integer, ArrayList<GridPosition>> components = getComponents();
-        //return util.linearRegression(components);
-        return null;
+        HashMap<Integer, HashMap<GridPosition, Double>> components = getComponents();
+        return util.linearRegression(components);
     }
 
-    public HashMap<Integer, ArrayList<GridPosition>> getComponents(){
-        HashMap<Integer, ArrayList<GridPosition>> components = new HashMap<Integer, ArrayList<GridPosition>>();
+    public void removeInsignificantBins() {
+        for (GridPosition g : gridValues.keySet()) {
+            int angle = maxAng(g);
+            int prob = 0;
+            int counter = 0;
+            for(GridPosition n : getNeighborsWithProbability(g)){
+                if(maxAng(n) == angle){
+                    prob += gridValues.get(n)[angle];
+                    counter++;
+                }
+            }
+            if(gridValues.get(g)[angle] < prob/counter){
+                gridValues.put(g, new double[angles]);
+            }
+        }
+    }
+
+    public HashMap<Integer, HashMap<GridPosition, Double>> getComponents(){
+        HashMap<Integer, HashMap<GridPosition, Double>> components = new HashMap<Integer, HashMap<GridPosition, Double>>();
         HashSet<GridPosition> addedToComponent = new HashSet<GridPosition>();
         for(GridPosition g : gridValues.keySet()){
             if(!addedToComponent.contains(g)){
                 HashSet<GridPosition> visited = new HashSet<GridPosition>();
-                ArrayList<GridPosition> component = new ArrayList<GridPosition>();
-                visited.add(g);
+                HashMap<GridPosition, Double> component = new HashMap<GridPosition, Double>();
                 LinkedList<GridPosition> toVisit = new LinkedList<GridPosition>();
-                toVisit.add(g);
-                component.add(g);
-                addedToComponent.add(g);
                 int angle = maxAng(g);
-                if(gridValues.get(g)[angle] > 5){
-                    while(toVisit.size() > 0){
-                        GridPosition current = toVisit.poll();
-                        for(GridPosition neighbour : getNeighbors(current)){
-                            if(!visited.contains(neighbour)){
-                                visited.add(neighbour);
-                                if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 2){
-                                    toVisit.add(neighbour);
-                                    component.add(neighbour);
-                                    addedToComponent.add(neighbour);
-                                }
+                component.put(g, gridValues.get(g)[angle]);
+                addedToComponent.add(g);
+                visited.add(g);
+                toVisit.add(g);
+                while(toVisit.size() > 0){
+                    GridPosition current = toVisit.poll();
+                    for(GridPosition neighbour : getNeighborsWithProbability(current)){
+                        if(!visited.contains(neighbour)){
+                            visited.add(neighbour);
+                            if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 0){
+                                toVisit.add(neighbour);
+                                component.put(neighbour, gridValues.get(neighbour)[angle]);
+                                addedToComponent.add(neighbour);
                             }
                         }
                     }
-                    if(component.size() > 2){
-                        boolean one = component.get(0).getX() > component.get(1).getX() && component.get(0).getY() > component.get(1).getY();
-                        boolean two = component.get(0).getX() < component.get(1).getX() && component.get(0).getY() < component.get(1).getY();
-                        if(one && two){
-                            Collections.sort(component, new comparator1());
-                        }
-                        else{
-                            Collections.sort(component, new comparator2());
-                        }
-                    }
-                    components.put(getComponentId(), component);
                 }
             }
         }
         return components;
     }
 
-    public int getComponentId(){
-        componentId++;
-        return componentId;
+    // Code to sort a component
+    /*
+    if(component.size() > 2){
+        boolean one = component.get(0).getX() > component.get(1).getX() && component.get(0).getY() > component.get(1).getY();
+        boolean two = component.get(0).getX() < component.get(1).getX() && component.get(0).getY() < component.get(1).getY();
+        if(one && two){
+            Collections.sort(component, new comparator1());
+        }
+        else{
+            Collections.sort(component, new comparator2());
+        }
     }
+    components.put(getComponentId(), component);*/
 
-    public ArrayList<GridPosition> getNeighbors(GridPosition g){
+    public ArrayList<GridPosition> getNeighborsWithProbability(GridPosition g){
         ArrayList<GridPosition> result = new ArrayList<GridPosition>();
         for(int i=(int)g.getX()-1; i<= g.getX()+1; i++){
             for(int j=(int)g.getY()-1; j<=g.getY()+1; j++){
@@ -134,9 +146,9 @@ public class Grid {
     }
 
     public int maxAng(GridPosition g){
-        int[] angleArrray = gridValues.get(g);
+        double[] angleArrray = gridValues.get(g);
         int max = 0;
-        int value = 0;
+        double value = 0;
         for(int i=0; i<angles-1; i++){
             if(angleArrray[i] > value){
                 max = i;
@@ -161,10 +173,6 @@ public class Grid {
         int yStop = (int)((p2.getY()-yMin)/yPixelWidth);
         int xSteps = Math.abs(xStop-x);
         int ySteps = Math.abs(yStop-y);
-        //System.out.println("Point "+a.getNewX()+","+a.getY());
-        //System.out.println("Point "+b.getNewX()+","+b.getY());
-        //System.out.println("X steps " + xSteps);
-        //System.out.println("Y steps " + ySteps);
         if(ySteps >= xSteps){
             int step = 0;
             double xChange = ySteps == 0 ? 0 : (p2.getX() - p1.getX()) / ySteps;
@@ -172,15 +180,7 @@ public class Grid {
                 double xVal = p1.getX() + (step*xChange);
                 x = (int) ((xVal-xMin)/xPixelWidth);
                 GridPosition g = new GridPosition(x, y);
-                int[] angl;
-                if(!gridValues.containsKey(g)){
-                    angl = new int[angles];
-                    gridValues.put(g,angl);
-                }
-                else{
-                    angl = gridValues.get(g);
-                }
-                angl[angIdx]++;
+                addProbability(g, angIdx, 1);
                 y++;
                 step++;
             }
@@ -192,20 +192,24 @@ public class Grid {
                 double yVal = p1.getY() + (step*yChange);
                 y = (int) ((yVal-yMin)/yPixelWidth);
                 GridPosition g = new GridPosition(x, y);
-                int[] angl;
-                //System.out.println("x,y: " + x+","+y);
-                if(!gridValues.containsKey(g)){
-                    angl = new int[angles];
-                    gridValues.put(g,angl);
-                }
-                else{
-                    angl = gridValues.get(g);
-                }
-                angl[angIdx]++;
+                addProbability(g, angIdx, 1);
                 x += Math.signum(xStop-x);
                 step++;
             }
         }
+
+    }
+
+    private void addProbability(GridPosition g, int angleIndex, double prob){
+        double[] angleArray;
+        if(!gridValues.containsKey(g)){
+            angleArray = new double[angles];
+            gridValues.put(g, angleArray);
+        }
+        else{
+            angleArray = gridValues.get(g);
+        }
+        angleArray[angleIndex] += prob;
 
     }
 

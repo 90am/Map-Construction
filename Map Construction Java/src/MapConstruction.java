@@ -10,96 +10,83 @@ import java.util.List;
 
 /**
  * Created by Andreas on 04/05/15.
+ *
+ * Class representing the original algorithm
+ *
  */
 public class MapConstruction {
 
     private Util util;
     private HashMap<Integer, ArrayList<Point>> data;
-    HashMap<Integer, ArrayList<Point>> dataFormatted;
-    //private ArrayList<RoadSegment> result;
+    private Grid grid;
     private double sigma1;
     private double sigma2;
     private double M;
     private double k;
-    private long roadSegmentId;
-    private int ruteId;
     private double xPixelWidth;
     private double yPixelWidth;
     private UTMPoint minUTM;
     private UTMPoint maxUTM;
-    // min 56.1288653,8.9452581
-    // max 56.146625,8.9885811
-    public MapConstruction(HashMap<Integer, ArrayList<Point>> data){
+
+
+    public MapConstruction(HashMap<Integer, ArrayList<Point>> data, UTMPoint min, UTMPoint max){
         util = new Util();
-        this.data = data;
-        /*for(Integer key : data.keySet()){
-            data.put(key, filterPoints(data.get(key)));
-        }*/
-        //this.result = new ArrayList<RoadSegment>();
-        this.sigma1 = 5;
-        this.sigma2 = 5;
-        this.M = 1;
-        this.k = 0.005;
-        this.roadSegmentId = 0;
-        ruteId  = 0;
-        sanityCheck();
-        LatLonPoint.Double min = new LatLonPoint.Double(56.1288653,8.9452581);
-        LatLonPoint.Double max = new LatLonPoint.Double(56.146625,8.9885811);
-        minUTM = new UTMPoint(min);
-        maxUTM = new UTMPoint(max);
-        Grid testGrid = new Grid(2, 2, 8, minUTM, maxUTM);
-        xPixelWidth = testGrid.getXPixelWidth();
-        yPixelWidth = testGrid.getYPixelWidth();
-        //Grid testGrid = new Grid(5, 5, 8, 5, 5, 100, 100);
+        this.data = selectSegments(data);
+        minUTM = min;
+        maxUTM = max;
+        grid = new Grid(5, 5, 8, minUTM, maxUTM);
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
-                //if(list.get(i-1).getX()==497588.0 && list.get(i-1).getY()==6224757.0)
-                    testGrid.addSegment(list.get(i-1), list.get(i));
+                    grid.addSegment(list.get(i-1), list.get(i));
             }
         }
-        HashMap<Integer, ArrayList<GridPosition>> lines = testGrid.computeLines();
-        dataFormatted = util.formatGridPositions(lines, xPixelWidth, yPixelWidth, minUTM.easting, minUTM.northing);
-        System.out.println("Number of lines found: " + lines.keySet().size());
-
-        /*
-        clarify();*/
+        grid.removeInsignificantBins();
     }
 
-    private void sanityCheck(){
+    public HashMap<Integer, ArrayList<Point>> getResult(){
+        return grid.getResult();
+    }
+
+    public HashMap<Integer, ArrayList<Point>> selectSegments(HashMap<Integer, ArrayList<Point>> data){
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        int ruteId = 1;
         for(Integer key : data.keySet()){
+            ArrayList<Point> list = data.get(key);
             ArrayList<Point> temp = new ArrayList<Point>();
-            for(Point p : data.get(key)){
-                if(temp.size() == 0){
-                    p.setRuteId(getRuteId());
-                    temp.add(p);
+            temp.add(list.get(0));
+            for(int i=1; i<list.size();i++){
+                if(checkSegment(list.get(i - 1), list.get(i))){
+                    temp.add(list.get(i));
                 }
                 else{
-                    Point prevP = temp.get(temp.size()-1);
-                    Date d1 = getDateFromString(prevP.getTime());
-                    Date d2 = getDateFromString(p.getTime());
-                    long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
-                    if(timeSpan < 30){
-                        p.setRuteId(prevP.getRuteId());
-                        temp.add(p);
-                    }
-                    else{
-                        result.put(prevP.getRuteId(), temp);
-                        temp = new ArrayList<Point>();
-                        p.setRuteId(getRuteId());
-                        temp.add(p);
-                    }
+                    if(temp.size() > 1)
+                        result.put(ruteId++, temp);
+                    temp = new ArrayList<Point>();
+                    temp.add(list.get(i));
                 }
             }
-            if(temp.size() > 0)
-                result.put(temp.get(0).getRuteId(), temp);
-
+            if(temp.size() > 1)
+                result.put(ruteId++, temp);
         }
-        data = result;
+        return result;
     }
 
-    private void clarify(){
+    public boolean checkSegment(Point p1, Point p2){
+        boolean result = false;
+        double speedThreshold = 25;
+        Date d1 = getDateFromString(p1.getTime());
+        Date d2 = getDateFromString(p2.getTime());
+        long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
+        double distance = util.getDistancePointToPoint(p1, p2);
+        double speed = distance/timeSpan;
+        if(speed < speedThreshold) {
+            result = true;
+        }
+        return result;
+    }
+
+    /*private void clarify(){
         for(int j=0; j<2; j++){
             for(Integer key : data.keySet()){
                 for(Point p : data.get(key)){
@@ -128,7 +115,9 @@ public class MapConstruction {
                 }
             }
         }
-    }
+    }*/
+
+
 
     private double attractionForce(double distance){
         return Math.exp(-Math.pow(distance,2)/(2*Math.pow(20,2)));
@@ -138,61 +127,8 @@ public class MapConstruction {
         return 0.005*distance;
     }
 
-    // Calculates the shortest distance from p to the trace segment from p1 to p2. Returns the best point, which is either p1, p2 or the point orthogonal on the trace segment
-    private Point getDistanceToTraceSegment(Point p, Point p1, Point p2){
-        double bestDistance = Double.MAX_VALUE;
-        Point bestPoint = null;
-        // Calculate distance, if less than result update
-        double vx = p2.getX() - p1.getX();
-        double vy = p2.getY() - p1.getY();
-        double wx = p.getX() - p1.getX();
-        double wy = p.getY() - p1.getY();
-        double c1 = vx * wx + vy * wy;
-        double c2 = vx * vx + vy * vy;
-        // p is before line
-        if(c1 <= 0){
-            bestDistance = getDistancePointToPoint(p.getX(), p.getY(), p1.getX(), p1.getY());
-            bestPoint = p1;
-        }
-        // p is after line
-        else if(c2 <= c1){
-            bestDistance = getDistancePointToPoint(p.getX(), p.getY(), p2.getX(), p2.getY());
-            bestPoint = p2;
-        }
-        // p is in between endpoints of line
-        else{
-            double b = c1/c2;
-            double x = p1.getX()+ vx * b;
-            double y = p1.getY()+ vy * b;
-            bestDistance = getDistancePointToPoint(p.getX(), p.getY(), x, y);
-            bestPoint = new Point(0, 0, x, y, "", 0, 0, 0, 0);
-        }
-        return bestPoint;
-    }
-
-    // Calculates the distance from one point to another
-    private double getDistancePointToPoint(double x1, double y1, double x2, double y2){
-        double xd = x2-x1;
-        double yd = y2-y1;
-        return Math.sqrt(xd * xd + yd * yd);
-    }
-
-    public int getRuteId(){
-        ruteId++;
-        return ruteId;
-    }
-
-    public long getRoadSegmentId(){
-        roadSegmentId++;
-        return roadSegmentId;
-    }
-
     public HashMap<Integer, ArrayList<Point>> getData(){
         return data;
-    }
-
-    public HashMap<Integer, ArrayList<Point>> getResult(){
-        return dataFormatted;
     }
 
     private Date getDateFromString(String s){
