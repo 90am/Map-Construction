@@ -31,8 +31,8 @@ public class HerningCyklerDataLoader {
     // max 56.146625,8.9885811
 
     public HerningCyklerDataLoader(){
-        min = new LatLonPoint.Double(56.135532, 8.965375);
-        max = new LatLonPoint.Double(56.138324, 8.976705);
+        min = new LatLonPoint.Double(56.134916, 8.966616);
+        max = new LatLonPoint.Double(56.145712, 8.981679);
     }
 
     public LatLonPoint.Double getMin(){
