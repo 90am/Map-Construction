@@ -24,14 +24,15 @@ public class HerningCyklerDataLoader {
     // Middle test area
     // min 56.135532, 8.965375
     // max 56.138324, 8.976705
-
+    //min = new LatLonPoint.Double(56.140736, 8.965670);
+    //max = new LatLonPoint.Double(56.143342, 8.973137);
     // Big test area
     // min 56.1288653,8.9452581
     // max 56.146625,8.9885811
 
     public HerningCyklerDataLoader(){
-        min = new LatLonPoint.Double(56.140736, 8.965670);
-        max = new LatLonPoint.Double(56.143342, 8.973137);
+        min = new LatLonPoint.Double(56.135532, 8.965375);
+        max = new LatLonPoint.Double(56.138324, 8.976705);
     }
 
     public LatLonPoint.Double getMin(){

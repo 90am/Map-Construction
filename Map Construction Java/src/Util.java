@@ -50,23 +50,43 @@ public class Util {
     public HashMap<Integer, ArrayList<GridPosition>> linearRegression (HashMap<Integer, HashMap<GridPosition, Double>> data){
         HashMap<Integer, ArrayList<GridPosition>> result = new HashMap<Integer, ArrayList<GridPosition>>();
         for(Integer key : data.keySet()){
-            if(data.get(key).size() > 1) {
-                SimpleRegression regression = new SimpleRegression();
-                double minX = Double.MAX_VALUE;
-                double maxX = 0;
-                for (GridPosition g : data.get(key).keySet()) {
-                    if (g.getX() < minX)
-                        minX = g.getX();
-                    if (g.getX() > maxX)
-                        maxX = g.getX();
-                    regression.addData(g.getX(), g.getY());
+            if(data.get(key).keySet().size() > 1) {
+                if(xLargerThanY(data.get(key).keySet())) {
+                    SimpleRegression regression = new SimpleRegression();
+                    double minX = Double.MAX_VALUE;
+                    double maxX = 0;
+                    for (GridPosition g : data.get(key).keySet()) {
+                        if (g.getX() < minX)
+                            minX = g.getX();
+                        if (g.getX() > maxX)
+                            maxX = g.getX();
+                        regression.addData(g.getX(), g.getY());
+                    }
+                    double minY = regression.predict(minX);
+                    double maxY = regression.predict(maxX);
+                    ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                    temp.add(new GridPosition(minX, minY));
+                    temp.add(new GridPosition(maxX, maxY));
+                    result.put(key, temp);
                 }
-                double minY = regression.predict(minX);
-                double maxY = regression.predict(maxX);
-                ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
-                temp.add(new GridPosition(minX, minY));
-                temp.add(new GridPosition(maxX, maxY));
-                result.put(key, temp);
+                else{
+                    SimpleRegression regression = new SimpleRegression();
+                    double minY = Double.MAX_VALUE;
+                    double maxY = 0;
+                    for (GridPosition g : data.get(key).keySet()) {
+                        if (g.getY() < minY)
+                            minY = g.getY();
+                        if (g.getY() > maxY)
+                            maxY = g.getY();
+                        regression.addData(g.getY(), g.getX());
+                    }
+                    double minX = regression.predict(minY);
+                    double maxX = regression.predict(maxY);
+                    ArrayList<GridPosition> temp = new ArrayList<GridPosition>();
+                    temp.add(new GridPosition(minX, minY));
+                    temp.add(new GridPosition(maxX, maxY));
+                    result.put(key, temp);
+                }
             }
         }
         return result;
@@ -385,7 +405,7 @@ public class Util {
     }
 
     public HashMap<Integer, ArrayList<Point>> formatGridPositions(HashMap<Integer, ArrayList<GridPosition>> data, double xPixelWidth, double yPixelWidth, double xMin, double yMin){
-        int pointId = 0;
+        int pointId = 1;
         HashMap<Integer, ArrayList<Point>> result = new  HashMap<Integer, ArrayList<Point>>();
         for(Integer key : data.keySet()){
             ArrayList<Point> temp = new ArrayList<Point>();

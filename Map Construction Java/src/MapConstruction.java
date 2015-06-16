@@ -34,13 +34,14 @@ public class MapConstruction {
         this.data = selectSegments(data);
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
-        grid = new Grid(5, 5, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon));
+        grid = new Grid(3, 3, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon));
         for(Integer key : data.keySet()){
             ArrayList<Point> list = data.get(key);
             for(int i=1; i<list.size();i++){
-                    grid.addSegment(list.get(i-1), list.get(i));
+                grid.addSegment(list.get(i-1), list.get(i));
             }
         }
+        grid.removeInsignificantBins();
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
@@ -73,7 +74,7 @@ public class MapConstruction {
 
     public boolean checkSegment(Point p1, Point p2){
         boolean result = false;
-        double speedThreshold = 25;
+        double speedThreshold = 12;
         Date d1 = getDateFromString(p1.getTime());
         Date d2 = getDateFromString(p2.getTime());
         long timeSpan = (d2.getTime() - d1.getTime()) / 1000;

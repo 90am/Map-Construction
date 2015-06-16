@@ -32,7 +32,6 @@ public class Grid3 {
         this.xPixelWidth = xPixelWidth;
         this.yPixelWidth = yPixelWidth;
         this.threshold = threshold;
-        this.angles = angles;
     }
 
     public double getXPixelWidth(){

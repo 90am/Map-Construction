@@ -58,12 +58,20 @@ public class Grid {
     public HashMap<Integer, ArrayList<Point>> getResult(){
         System.out.println("AHBI "+gridValues.keySet().size());
         HashMap<Integer, ArrayList<GridPosition>> lines = computeLines();
-        return util.formatGridPositions(lines, xPixelWidth, yPixelWidth, xMin, yMin);
+        HashMap<Integer, ArrayList<Point>> formattedLines = util.formatGridPositions(lines, xPixelWidth, yPixelWidth, xMin, yMin);
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        for(Integer key : formattedLines.keySet()){
+            double distance = util.getDistanceOfSegment(formattedLines.get(key));
+            if(distance > 45){
+                result.put(key, formattedLines.get(key));
+            }
+        }
+        return result;
     }
 
     public HashMap<Integer, ArrayList<GridPosition>> computeCurves() {
         HashMap<Integer, HashMap<GridPosition, Double>> components = getComponents();
-        return util.weightedCurveFitting(components, 10, 3);
+        return util.weightedCurveFitting(components, 5, 4);
     }
 
 
@@ -75,7 +83,7 @@ public class Grid {
     public void removeInsignificantBins() {
         for (GridPosition g : gridValues.keySet()) {
             int angle = maxAng(g);
-            int prob = 0;
+            double prob = 0;
             int counter = 0;
             for(GridPosition n : getNeighborsWithProbability(g)){
                 if(maxAng(n) == angle){
@@ -110,7 +118,7 @@ public class Grid {
                     for(GridPosition neighbour : getNeighborsWithProbability(current)){
                         if(!visited.contains(neighbour)){
                             visited.add(neighbour);
-                            if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 0){
+                            if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 0 && !addedToComponent.contains(neighbour)){
                                 toVisit.add(neighbour);
                                 component.put(neighbour, gridValues.get(neighbour)[angle]);
                                 addedToComponent.add(neighbour);
@@ -118,7 +126,8 @@ public class Grid {
                         }
                     }
                 }
-                components.put(componentId++, component);
+                if(component.size() > 4)
+                    components.put(componentId++, component);
             }
         }
         return components;
