@@ -92,6 +92,7 @@ public class Grid {
     }
 
     public HashMap<Integer, HashMap<GridPosition, Double>> getComponents(){
+        int componentId = 1;
         HashMap<Integer, HashMap<GridPosition, Double>> components = new HashMap<Integer, HashMap<GridPosition, Double>>();
         HashSet<GridPosition> addedToComponent = new HashSet<GridPosition>();
         for(GridPosition g : gridValues.keySet()){
@@ -117,6 +118,7 @@ public class Grid {
                         }
                     }
                 }
+                components.put(componentId++, component);
             }
         }
         return components;
