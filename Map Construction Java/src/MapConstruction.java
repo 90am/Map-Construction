@@ -41,7 +41,6 @@ public class MapConstruction {
                     grid.addSegment(list.get(i-1), list.get(i));
             }
         }
-        grid.removeInsignificantBins();
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){

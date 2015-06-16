@@ -56,6 +56,7 @@ public class Grid {
     }
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
+        System.out.println("AHBI "+gridValues.keySet().size());
         HashMap<Integer, ArrayList<GridPosition>> lines = computeLines();
         return util.formatGridPositions(lines, xPixelWidth, yPixelWidth, xMin, yMin);
     }
@@ -83,7 +84,7 @@ public class Grid {
                 }
             }
             if(counter > 0) {
-                if (gridValues.get(g)[angle] < prob / counter) {
+                if (gridValues.get(g)[angle] < (prob/counter)) {
                     gridValues.put(g, new double[angles]);
                 }
             }
