@@ -322,9 +322,9 @@ public class Util {
             for(Integer key2 : data.keySet()){
                 if(key != key2){
                     ArrayList<Point> temp = data.get(key2);
-                    double distance1 = getDistancePointToPoint(temp.get(0), current.get(current.size()-1));
+                    double distance1 = getDistancePointToPoint(temp.get(temp.size()-1), current.get(0));
                     if(distance1 < threshold){
-                        current.add(temp.get(0));
+                        temp.add(current.get(0));
                     }
                 }
             }
