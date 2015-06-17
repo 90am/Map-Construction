@@ -66,6 +66,7 @@ public class Grid {
                 result.put(key, formattedLines.get(key));
             }
         }
+        result = util.connectSegments2(result, 10);
         return result;
     }
 
