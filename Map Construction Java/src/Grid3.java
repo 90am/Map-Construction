@@ -132,6 +132,7 @@ public class Grid3 {
                 result.put(key, curves.get(key));
             }
         }
+        result = util.connectSegments2(result, 10);
         return result;
     }
 

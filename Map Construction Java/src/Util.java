@@ -312,8 +312,24 @@ public class Util {
                 }
             }
         }
-        result = connectSegments(result, 5);
+        //result = connectSegments(result, 5);
         return result;
+    }
+
+    public HashMap<Integer, ArrayList<Point>> connectSegments2(HashMap<Integer, ArrayList<Point>> data, int threshold){
+        for(Integer key : data.keySet()){
+            ArrayList<Point> current = data.get(key);
+            for(Integer key2 : data.keySet()){
+                if(key != key2){
+                    ArrayList<Point> temp = data.get(key2);
+                    double distance1 = getDistancePointToPoint(temp.get(0), current.get(current.size()-1));
+                    if(distance1 < threshold){
+                        current.add(temp.get(0));
+                    }
+                }
+            }
+        }
+        return data;
     }
 
 
