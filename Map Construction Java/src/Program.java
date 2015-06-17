@@ -44,7 +44,7 @@ public class Program {
         util.printTimestamp();
         HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HashMap<Integer, ArrayList<Point>> trips = load.loadAllTrips();
-        HerningCyklerDataSaver save = new HerningCyklerDataSaver();
+        //HerningCyklerDataSaver save = new HerningCyklerDataSaver();
         System.out.println("Number of trips: " + trips.keySet().size());
         util.printTimestamp();
         System.out.println("Add trajectory data");
@@ -56,9 +56,9 @@ public class Program {
         System.out.println("Evaluation");
         Evaluation eval = new Evaluation(load.loadMatchedGroundTruth(), result);
         util.printTimestamp();
-        System.out.println("Save segments");
-        save.insertSegments(result);
-        util.printTimestamp();
+        //System.out.println("Save segments");
+        //save.insertSegments(result);
+        //util.printTimestamp();
 
        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
         HerningCyklerDataSaver save = new HerningCyklerDataSaver();

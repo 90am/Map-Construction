@@ -286,6 +286,40 @@ public class Grid3 {
         return components;
     }
 
+    public HashMap<Integer, HashMap<GridPosition, Double>> getComponents2(double threshold){
+        int componentId = 1;
+        HashMap<Integer, HashMap<GridPosition, Double>> components = new HashMap<Integer, HashMap<GridPosition, Double>>();
+        HashSet<GridPosition> addedToComponent = new HashSet<GridPosition>();
+        for(GridPosition g : gridValues.keySet()){
+            if(!addedToComponent.contains(g)){
+                HashSet<GridPosition> visited = new HashSet<GridPosition>();
+                HashMap<GridPosition, Double> component = new HashMap<GridPosition, Double>();
+                LinkedList<GridPosition> toVisit = new LinkedList<GridPosition>();
+                int angle = maxAng(g);
+                component.put(g, gridValues.get(g)[angle]);
+                addedToComponent.add(g);
+                visited.add(g);
+                toVisit.add(g);
+                while(toVisit.size() > 0){
+                    GridPosition current = toVisit.poll();
+                    for(GridPosition neighbour : getNeighborsWithProbability(current)){
+                        if(!visited.contains(neighbour)){
+                            visited.add(neighbour);
+                            if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > threshold && !addedToComponent.contains(neighbour)){
+                                toVisit.add(neighbour);
+                                component.put(neighbour, gridValues.get(neighbour)[angle]);
+                                addedToComponent.add(neighbour);
+                            }
+                        }
+                    }
+                }
+                if(component.size() > 4)
+                    components.put(componentId++, component);
+            }
+        }
+        return components;
+    }
+
     public void binarize(){
         HashMap<GridPosition, double[] > result = new HashMap<GridPosition, double[]>();
         for(GridPosition g : gridValues.keySet()){

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Andreas on 28/05/15.
@@ -9,30 +10,73 @@ public class Evaluation {
     private HashMap<Integer, ArrayList<Point>> groundTruth;
     private HashMap<Integer, ArrayList<Point>> testData;
     private Util util;
+    ArrayList<Integer> distanceArray;
+    ArrayList<Integer> angleArray;
+    ArrayList<Double> recallArray;
+    ArrayList<Double> precisionArray;
+    ArrayList<Double> fscoreArray;
 
     public Evaluation(HashMap<Integer, ArrayList<Point>> groundTruth, HashMap<Integer, ArrayList<Point>> testData){
         this.groundTruth = groundTruth;
         this.testData = testData;
         this.util = new Util();
-        getFScore();
+        distanceArray = new ArrayList<Integer>();
+        angleArray = new ArrayList<Integer>();
+        recallArray = new ArrayList<Double>();
+        precisionArray = new ArrayList<Double>();
+        fscoreArray = new ArrayList<Double>();
+        calcFScores(5);
+        report();
     }
 
-    public double getFScore(){
+    public void calcFScores(int iterations){
+        for(int i=1; i<=iterations; i++){
+            computeFScore(5*i, 20);
+        }
+    }
+
+    public void report(){
         System.out.println("Ground truth length: "+getDistanceOfMap(groundTruth));
         System.out.println("Test map length: "+getDistanceOfMap(testData));
-        double commonLength = computeCommonRoadLength();
-        System.out.println("Common length: "+commonLength);
-        double recall = commonLength/getDistanceOfMap(groundTruth);
-        System.out.println("Recall: "+recall);
-        double precision = commonLength/getDistanceOfMap(testData);
-        if(precision > 1.0)
-            precision = 1.0;
-        System.out.println("Precision: "+precision);
-        double FScore = (2*recall*precision)/(recall+precision);
-        System.out.println("F-score: "+FScore);
+        System.out.println("Matching distances: ");
+        for(int i=0; i<distanceArray.size(); i++){
+            System.out.print(distanceArray.get(i)+" ");
+        }
+        System.out.println("");
+        System.out.println("Matching angles: ");
+        for(int i=0; i<angleArray.size(); i++){
+            System.out.print(angleArray.get(i)+" ");
+        }
+        System.out.println("");
+        System.out.println("Recall: ");
+        for(int i=0; i<recallArray.size(); i++){
+            System.out.print(recallArray.get(i)+" ");
+        }
+        System.out.println("");
+        System.out.println("Precision: ");
+        for(int i=0; i<precisionArray.size(); i++){
+            System.out.print(precisionArray.get(i)+" ");
+        }
+        System.out.println("");
+        System.out.println("F-score: ");
+        for(int i=0; i<fscoreArray.size(); i++){
+            System.out.print(fscoreArray.get(i)+" ");
+        }
+        System.out.println("");
         double displacement = computeGeographicDisplacement();
-        System.out.println("Average displacement: "+displacement);
-        return FScore;
+        System.out.println("Average displacement: " + displacement);
+    }
+
+    public void computeFScore(int distanceThreshold, int angleThreshold){
+        double commonLength = computeCommonRoadLength(distanceThreshold, angleThreshold);
+        double recall = commonLength/getDistanceOfMap(groundTruth);
+        double precision = commonLength/getDistanceOfMap(testData);
+        double FScore = (2*recall*precision)/(recall+precision);
+        distanceArray.add(distanceThreshold);
+        angleArray.add(angleThreshold);
+        recallArray.add(recall);
+        precisionArray.add(precision);
+        fscoreArray.add(FScore);
     }
 
     public double getDistanceOfMap(HashMap<Integer, ArrayList<Point>> map){
@@ -43,8 +87,9 @@ public class Evaluation {
         return result;
     }
 
-    public double computeCommonRoadLength(){
+    public double computeCommonRoadLength(int distanceThreshold, int angleThreshold){
         double commonLength = 0;
+        HashMap<Integer, Double> usedSegments = new HashMap<Integer, Double>();
         for(Integer key : groundTruth.keySet()){
             ArrayList<Point> segment = groundTruth.get(key);
             for(int i=1; i<segment.size(); i++){
@@ -55,25 +100,59 @@ public class Evaluation {
                     Point temp1 = tempList.get(j-1);
                     Point temp2 = tempList.get(j);
                     double angle = Math.toDegrees(util.getAngle(temp1, temp2));
-                    for(Integer key2 : testData.keySet()){
-                        ArrayList<Point> testSegment = testData.get(key2);
-                        boolean foundMatch = false;
-                        for(int h=1; h<testSegment.size(); h++){
-                            Point testPoint1 = testSegment.get(h-1);
-                            Point testPoint2 = testSegment.get(h);
-                            double testAngle = Math.toDegrees(util.getAngle(testPoint1, testPoint2));
-                            if(compareAngles(angle, testAngle, 15)){
-                                double distance1 = util.getDistancePointToSegment(temp1, testPoint1, testPoint2);
-                                double distance2 = util.getDistancePointToSegment(temp2, testPoint1, testPoint2);
-                                if(distance1 < 5 && distance2 < 5){
-                                    commonLength += util.getDistancePointToPoint(temp1, temp2);
-                                    foundMatch = true;
-                                    break;
+                    boolean segmentNotFound = true;
+                    HashSet<Integer> testedSegments = new HashSet<Integer>();
+                    int iterations = 0;
+                    while(segmentNotFound && iterations < 5) {
+                        iterations++;
+                        if(iterations>5){
+                            System.out.println("ARG!!!");
+                        }
+                        double minDistance = Double.MAX_VALUE;
+                        int segmentKey = 0;
+                        for (Integer key2 : testData.keySet()) {
+                            ArrayList<Point> testSegment = testData.get(key2);
+                            for (int h = 1; h < testSegment.size(); h++) {
+                                Point testPoint1 = testSegment.get(h - 1);
+                                Point testPoint2 = testSegment.get(h);
+                                double testAngle = Math.toDegrees(util.getAngle(testPoint1, testPoint2));
+                                if (compareAngles(angle, testAngle, angleThreshold)) {
+                                    double distance1 = util.getDistancePointToSegment(temp1, testPoint1, testPoint2);
+                                    double distance2 = util.getDistancePointToSegment(temp2, testPoint1, testPoint2);
+                                    double maxDistance = Math.max(distance1, distance2);
+                                    if (maxDistance < minDistance && !testedSegments.contains(segmentKey)) {
+                                        minDistance = maxDistance;
+                                        segmentKey = key2;
+                                    }
                                 }
                             }
                         }
-                        if(foundMatch){
-                            break;
+                        if (minDistance < distanceThreshold) {
+                            if (usedSegments.containsKey(segmentKey)) {
+                                double distanceLeft = usedSegments.get(segmentKey);
+                                if (distanceLeft > util.getDistancePointToPoint(temp1, temp2)) {
+                                    commonLength += util.getDistancePointToPoint(temp1, temp2);
+                                    usedSegments.put(segmentKey, distanceLeft - util.getDistancePointToPoint(temp1, temp2));
+                                    segmentNotFound = false;
+                                } else {
+                                    if(distanceLeft > 0) {
+                                        commonLength += distanceLeft;
+                                        usedSegments.put(segmentKey, 0.0);
+                                        segmentNotFound = false;
+                                    }
+                                    else{
+                                        testedSegments.add(segmentKey);
+                                    }
+                                }
+                            } else {
+                                commonLength += util.getDistancePointToPoint(temp1, temp2);
+                                double distanceLeft = util.getDistanceOfSegment(testData.get(segmentKey)) - util.getDistancePointToPoint(temp1, temp2);
+                                usedSegments.put(segmentKey, distanceLeft);
+                                segmentNotFound = false;
+                            }
+                        }
+                        else{
+                            segmentNotFound = false;
                         }
                     }
                 }

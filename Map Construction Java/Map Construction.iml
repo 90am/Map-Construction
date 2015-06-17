@@ -12,5 +12,6 @@
     <orderEntry type="library" name="sqljdbc4" level="project" />
     <orderEntry type="library" name="openmap" level="project" />
     <orderEntry type="library" name="commons-math3-3.5" level="project" />
+    <orderEntry type="library" name="postgresql-9.4-1201.jdbc41" level="project" />
   </component>
 </module>
