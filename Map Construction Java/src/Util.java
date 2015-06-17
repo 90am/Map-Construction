@@ -317,14 +317,25 @@ public class Util {
     }
 
     public HashMap<Integer, ArrayList<Point>> connectSegments2(HashMap<Integer, ArrayList<Point>> data, int threshold){
+        int pointId = 0;
+        for(Integer key : data.keySet()){
+            for(Point p : data.get(key)){
+                if(p.getPointId() > pointId){
+                    pointId = p.getPointId();
+                }
+            }
+        }
+        pointId++;
         for(Integer key : data.keySet()){
             ArrayList<Point> current = data.get(key);
             for(Integer key2 : data.keySet()){
                 if(key != key2){
                     ArrayList<Point> temp = data.get(key2);
-                    double distance1 = getDistancePointToPoint(temp.get(temp.size()-1), current.get(0));
-                    if(distance1 < threshold){
-                        temp.add(current.get(0));
+                    double distance1 = getDistancePointToPoint(temp.get(temp.size() - 1), current.get(0));
+                    double distance2 = getDistancePointToPoint(current.get(0), temp.get(temp.size()-1));
+                    if(distance1 < threshold || distance2 < threshold){
+                        Point p = current.get(0);
+                        temp.add(new Point(p.getLat(), p.getLon(), p.getX(), p.getY(), p.getTime(), pointId++, temp.get(0).getRuteId(), p.getBearing(), p.getAccuracy()));
                     }
                 }
             }

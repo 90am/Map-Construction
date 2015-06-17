@@ -100,7 +100,6 @@ public class HerningCyklerDataSaver {
     public void insertSegments(HashMap<Integer, ArrayList<Point>> points) {
         Connection conn = null;
         Statement stmt = null;
-        int pointId = 1;
         for (Integer key : points.keySet()) {
             for (Point p : points.get(key)) {
                 /*UTMPoint UTMTemp = new UTMPoint(p.getY(), p.getX(), 32, 'N');
@@ -111,7 +110,7 @@ public class HerningCyklerDataSaver {
                     conn = DriverManager.getConnection(herningCykler_db_url, herningCykler_user, herningCykler_password);
                     // Execute update
                     stmt = conn.createStatement();
-                    String sql = " INSERT INTO segments (PointId, SegmentId, X, Y, Lat, Lon) VALUES ("+(pointId++)+", "+p.getRuteId()+
+                    String sql = " INSERT INTO segments (PointId, SegmentId, X, Y, Lat, Lon) VALUES ("+p.getPointId()+", "+p.getRuteId()+
                             ", "+p.getX()+", "+p.getY()+", "+p.getLat()+", "+p.getLon()+")";
                     stmt.executeUpdate(sql);
                     stmt.close();
