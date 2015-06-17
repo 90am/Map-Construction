@@ -245,6 +245,7 @@ public class Util {
                 for(ArrayList<GridPosition> l : clusters) {
                     if(xLargerThanY(l)) {
                         WeightedObservedPoints obs = new WeightedObservedPoints();
+                        SimpleRegression regression = new SimpleRegression();
                         double minX = Double.MAX_VALUE;
                         double maxX = 0;
                         for (GridPosition g : l) {
@@ -253,8 +254,12 @@ public class Util {
                             if (g.getX() > maxX)
                                 maxX = g.getX();
                             obs.add(data.get(key).get(g), g.getX(), g.getY());
+                            regression.addData(g.getX(), g.getY());
                         }
                         PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
+                        if(regression.getRSquare() > 0.85){
+                            fitter = PolynomialCurveFitter.create(1);
+                        }
                         double[] coeff = fitter.fit(obs.toList());
                         PolynomialFunction poly = new PolynomialFunction(coeff);
                         double minY = poly.value(minX);
@@ -273,6 +278,7 @@ public class Util {
                     }
                     else{
                         WeightedObservedPoints obs = new WeightedObservedPoints();
+                        SimpleRegression regression = new SimpleRegression();
                         double minY = Double.MAX_VALUE;
                         double maxY = 0;
                         for (GridPosition g : l) {
@@ -281,8 +287,12 @@ public class Util {
                             if (g.getY() > maxY)
                                 maxY = g.getY();
                             obs.add(data.get(key).get(g), g.getY(), g.getX());
+                            regression.addData(g.getY(), g.getX());
                         }
                         PolynomialCurveFitter fitter = PolynomialCurveFitter.create(degree);
+                        if(regression.getRSquare() > 0.85){
+                            fitter = PolynomialCurveFitter.create(1);
+                        }
                         double[] coeff = fitter.fit(obs.toList());
                         PolynomialFunction poly = new PolynomialFunction(coeff);
                         double minX = poly.value(minY);

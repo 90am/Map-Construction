@@ -73,7 +73,7 @@ public class HerningCyklerDataLoader {
         try{
             // Register jdbc driver and open connection
             Class.forName(driver);
-            conn = DriverManager.getConnection(debugurl, user, pass);
+            conn = DriverManager.getConnection(url, user, pass);
             // Execute query
             stmt = conn.createStatement();
             //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";

@@ -31,7 +31,7 @@ public class Evaluation {
 
     public void calcFScores(int iterations){
         for(int i=1; i<=iterations; i++){
-            computeFScore(5*i, 20);
+            computeFScore(5*i, 40);
         }
     }
 

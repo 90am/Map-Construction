@@ -57,7 +57,7 @@ public class Program {
         Evaluation eval = new Evaluation(load.loadMatchedGroundTruth(), result);
         util.printTimestamp();
         System.out.println("Save segments");
-        save.insertSegments(result);
+        //save.insertSegments(result);
         util.printTimestamp();
 
        /*HerningCyklerDataLoader load = new HerningCyklerDataLoader();
