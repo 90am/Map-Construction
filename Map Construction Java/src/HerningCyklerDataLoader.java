@@ -9,20 +9,20 @@ import java.util.HashMap;
  */
 public class HerningCyklerDataLoader {
 
-    private String jdbc_driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private String herningCykler_db_url = "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCykler";
-    private String herningCyklerDEBUG_db_url = "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCyklerDEBUG";
-    private String herningCykler_user = "HerningUser";
-    private String herningCykler_password = "herningpass";
+    private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private String url = "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCykler";
+    private String debugurl= "jdbc:sqlserver://herningcykler.ecosense.cs.au.dk;databaseName=HerningCyklerDEBUG";
+    private String user = "HerningUser";
+    private String pass = "herningpass";
     private LatLonPoint.Double min;
     private LatLonPoint.Double max;
 
     //PostgreSQL
-    static final String postgres_driver = "org.postgresql.Driver";
-    static final String postgreSQL_url = "jdbc:postgresql://localhost:5432/HerningCykler";
+    /*static final String driver = "org.postgresql.Driver";
+    static final String url = "jdbc:postgresql://localhost:5432/HerningCykler";
 
-    static final String postgres_user = "Andreas";
-    static final String postgres_pass = "090490";
+    static final String user = "Andreas";
+    static final String pass = "090490";*/
 
     // Small test area
     // min 56.135931,8.969493
@@ -32,11 +32,17 @@ public class HerningCyklerDataLoader {
     // min 56.135532, 8.965375
     // max 56.138324, 8.976705
 
+    //min = new LatLonPoint.Double(56.135532, 8.965375);
+    //max = new LatLonPoint.Double(56.138324, 8.976705);
+
     //min = new LatLonPoint.Double(56.140736, 8.965670);
     //max = new LatLonPoint.Double(56.143342, 8.973137);
 
     //min = new LatLonPoint.Double(56.134916, 8.966616);
     //max = new LatLonPoint.Double(56.145712, 8.981679);
+
+    //min = new LatLonPoint.Double(56.133984, 8.966423);
+    //max = new LatLonPoint.Double(56.139340, 8.985434);
 
     // Big test area
     // min 56.1288653,8.9452581
@@ -48,8 +54,8 @@ public class HerningCyklerDataLoader {
 
 
     public HerningCyklerDataLoader(){
-        min = new LatLonPoint.Double(56.135658, 8.966466);
-        max = new LatLonPoint.Double(56.145700, 8.977753);
+        min = new LatLonPoint.Double(56.135532, 8.965375);
+        max = new LatLonPoint.Double(56.138324, 8.976705);
     }
 
     public LatLonPoint.Double getMin(){
@@ -66,8 +72,8 @@ public class HerningCyklerDataLoader {
         Statement stmt = null;
         try{
             // Register jdbc driver and open connection
-            Class.forName(jdbc_driver);
-            conn = DriverManager.getConnection(herningCyklerDEBUG_db_url, herningCykler_user, herningCykler_password);
+            Class.forName(driver);
+            conn = DriverManager.getConnection(debugurl, user, pass);
             // Execute query
             stmt = conn.createStatement();
             //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
@@ -117,8 +123,8 @@ public class HerningCyklerDataLoader {
         int pointId = 1;
         try{
             // Register jdbc driver and open connection
-            Class.forName(postgres_driver);
-            conn = DriverManager.getConnection(postgreSQL_url, postgres_user, postgres_pass);
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, user, pass);
             // Execute query
             stmt = conn.createStatement();
             String sql = "SELECT VejstykkeId, X, Y, Lat, Lon FROM vwKnudeJoinedVejstykke WHERE " +
@@ -190,8 +196,8 @@ public class HerningCyklerDataLoader {
         int pointId = 1;
         try{
             // Register jdbc driver and open connection
-            Class.forName(postgres_driver);
-            conn = DriverManager.getConnection(postgreSQL_url, postgres_user, postgres_pass);
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, user, pass);
             // Execute query
             stmt = conn.createStatement();
             String sql = "SELECT VejstykkeId, X, Y, Lat, Lon FROM vwKnudeJoinedVejstykke WHERE " +
@@ -262,8 +268,8 @@ public class HerningCyklerDataLoader {
         Statement stmt = null;
         try{
             // Register jdbc driver and open connection
-            Class.forName(postgres_driver);
-            conn = DriverManager.getConnection(postgreSQL_url, postgres_user, postgres_pass);
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, user, pass);
             // Execute query
             stmt = conn.createStatement();
             //String sql ="SELECT X, Y, Lat, Lon, TimePoint, PunktId, RuteId, Accuracy FROM Punkt WHERE RuteId = 739321 ORDER BY PunktId";
