@@ -31,7 +31,7 @@ public class MapConstruction {
 
     public MapConstruction(HashMap<Integer, ArrayList<Point>> data, LatLonPoint.Double minLatLon, LatLonPoint.Double maxLatLon){
         util = new Util();
-        this.data = selectSegments(data);
+        this.data = selectSegments2(data);
         this.minLatLon = minLatLon;
         this.maxLatLon = maxLatLon;
         grid = new Grid(3, 3, 8, new UTMPoint(minLatLon), new UTMPoint(maxLatLon));
@@ -120,7 +120,7 @@ public class MapConstruction {
 
 
     private double attractionForce(double distance){
-        return Math.exp(-Math.pow(distance,2)/(2*Math.pow(20,2)));
+        return Math.exp(-Math.pow(distance, 2) / (2 * Math.pow(20, 2)));
     }
 
     private double springForce(double distance){
@@ -141,5 +141,76 @@ public class MapConstruction {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public HashMap<Integer, ArrayList<Point>> selectSegments2(HashMap<Integer, ArrayList<Point>> data){
+        HashMap<Integer, ArrayList<Point>> filteredData = accuracyFilter(data);
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        int ruteId = 1;
+        for(Integer key : filteredData.keySet()){
+            ArrayList<Point> list = filteredData.get(key);
+            ArrayList<Point> temp = new ArrayList<Point>();
+            temp.add(list.get(0));
+            for(int i=1; i<list.size();i++){
+                if(checkSegment(list.get(i - 1), list.get(i))){
+                    temp.add(list.get(i));
+                }
+                else{
+                    result.put(ruteId++, temp);
+                    temp = new ArrayList<Point>();
+                    temp.add(list.get(i));
+                }
+            }
+            result.put(ruteId++, temp);
+        }
+        return result;
+    }
+
+    public boolean checkSegment2(Point p1, Point p2){
+        boolean result = false;
+        double speedThreshold = 10;
+        double angleThreshold = 20;
+        Date d1 = getDateFromString(p1.getTime());
+        Date d2 = getDateFromString(p2.getTime());
+        long timeSpan = (d2.getTime() - d1.getTime()) / 1000;
+        double distance = util.getDistancePointToPoint(p1, p2);
+        double speed = distance/timeSpan;
+        double angle = util.getAngleInDegrees(p1, p2);
+        double angle2 = angle+180;
+        if(angle2 > 360){
+            angle2 = angle2 - 360;
+        }
+        if(speed < speedThreshold) {
+            if (p1.getBearing() != 0 && p2.getBearing() != 0) {
+                double angDif1 = Math.abs(p1.getBearing()-angle);
+                double angDif2 = Math.abs(p1.getBearing()-angle2);
+                if(angDif1 < angleThreshold || angDif2 < angleThreshold){
+                    angDif1 = Math.abs(p2.getBearing()-angle);
+                    angDif2 = Math.abs(p2.getBearing()-angle2);
+                    if(angDif1 < angleThreshold || angDif2 < angleThreshold){
+                        result = true;
+                    }
+                }
+            }
+            else{
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private HashMap<Integer, ArrayList<Point>>  accuracyFilter(HashMap<Integer, ArrayList<Point>>  data){
+        HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
+        for(Integer key : data.keySet()){
+            ArrayList<Point> temp = new ArrayList<Point>();
+            for(Point p : data.get(key)){
+                if(p.getAccuracy() < 10){
+                    temp.add(p);
+                }
+            }
+            if(temp.size() > 0)
+                result.put(key, temp);
+        }
+        return result;
     }
 }

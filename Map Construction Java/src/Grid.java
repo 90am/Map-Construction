@@ -57,7 +57,7 @@ public class Grid {
 
     public HashMap<Integer, ArrayList<Point>> getResult(){
         System.out.println("AHBI "+gridValues.keySet().size());
-        HashMap<Integer, ArrayList<GridPosition>> lines = computeLines();
+        HashMap<Integer, ArrayList<GridPosition>> lines = computeCurves();
         HashMap<Integer, ArrayList<Point>> formattedLines = util.formatGridPositions(lines, xPixelWidth, yPixelWidth, xMin, yMin);
         HashMap<Integer, ArrayList<Point>> result = new HashMap<Integer, ArrayList<Point>>();
         for(Integer key : formattedLines.keySet()){
@@ -119,7 +119,7 @@ public class Grid {
                     for(GridPosition neighbour : getNeighborsWithProbability(current)){
                         if(!visited.contains(neighbour)){
                             visited.add(neighbour);
-                            if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 0 && !addedToComponent.contains(neighbour)){
+                            if(angle == maxAng(neighbour) && gridValues.get(neighbour)[angle] > 2 && !addedToComponent.contains(neighbour)){
                                 toVisit.add(neighbour);
                                 component.put(neighbour, gridValues.get(neighbour)[angle]);
                                 addedToComponent.add(neighbour);
